@@ -393,12 +393,12 @@ def seq2seq_model(input_data, target_data, keep_prob, batch_size, sequence_lengt
 
 
 # Set Hyperparameters
-epochs = 100
-batch_size = 128
-rnn_size = 512
+epochs = 50
+batch_size = 64
+rnn_size = 256
 num_layers = 2
-encoding_embedding_size = 512
-decoding_embedding_size = 512
+encoding_embedding_size = 256
+decoding_embedding_size = 256
 learning_rate = 0.005
 learning_rate_decay = 0.9
 min_learning_rate = 0.0001
