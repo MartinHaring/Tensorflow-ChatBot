@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 import tensorflow as tf
 import re
@@ -392,6 +391,7 @@ def seq2seq_model(input_data, target_data, keep_prob, batch_size, sequence_lengt
 
     return train_logits, infer_logits
 
+
 # Set Hyperparameters
 epochs = 100
 batch_size = 128
@@ -570,10 +570,12 @@ for epoch_i in range(1, epochs + 1):
 
 # -------------------------------------- TESTING ------------------
 
+
 # Prepare question for the model
 def question_to_seq(question, vocab_to_int):
     question = clean_text(question)
     return [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in question.split()]
+
 
 # Create input question
 input_question = 'Why is the sky blue?'
