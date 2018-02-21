@@ -401,7 +401,7 @@ sess = tf.Session()
 saver = tf.train.Saver()
 
 # Create placeholders for inputs to the model
-# these are initially emptyinput_data = tf.placeholder(tf.int32, [None, None], name='input')
+# these are initially empty
 input_data = tf.placeholder(tf.int32, [None, None], name='input')
 targets = tf.placeholder(tf.int32, [None, None], name='targets')
 lr = tf.placeholder(tf.float32, name='learning_rate')
