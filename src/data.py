@@ -226,17 +226,6 @@ for length in range(1, max_line_length+1):
 
 # ---------------------------------------------- MODEL --------------------------
 
-# Create placeholders for inputs to the model
-# these are initially empty
-def model_inputs():
-
-    input_data = tf.placeholder(tf.int32, [None, None], name='input')
-    targets = tf.placeholder(tf.int32, [None, None], name='targets')
-    lr = tf.placeholder(tf.float32, name='learning_rate')
-    keep_prob = tf.placeholder(tf.float32, name='keep_prob')
-
-    return input_data, targets, lr, keep_prob
-
 # Remove last word id from each batch and concat <GO> to the start
 def process_encoding_input(target_data, vocab_to_int, batch_size):
 
@@ -408,11 +397,15 @@ keep_probability = 0.75
 tf.reset_default_graph()
 
 # Start session
-#sess = tf.InteractiveSession()
 sess = tf.Session()
+saver = tf.train.Saver()
 
-# Load model inputs
-input_data, targets, lr, keep_prob = model_inputs()
+# Create placeholders for inputs to the model
+# these are initially emptyinput_data = tf.placeholder(tf.int32, [None, None], name='input')
+input_data = tf.placeholder(tf.int32, [None, None], name='input')
+targets = tf.placeholder(tf.int32, [None, None], name='targets')
+lr = tf.placeholder(tf.float32, name='learning_rate')
+keep_prob = tf.placeholder(tf.float32, name='keep_prob')
 
 # Sequence length will be the max line length for each batch
 sequence_length = tf.placeholder_with_default(max_line_length, None, name='sequence_length')
@@ -502,6 +495,8 @@ checkpoint = "best_model.ckpt"
 
 sess.run(tf.global_variables_initializer())
 
+saver.restore(sess, checkpoint)
+
 for epoch_i in range(1, epochs + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, batch_size)):
         start_time = time.time()
@@ -555,7 +550,6 @@ for epoch_i in range(1, epochs + 1):
             if avg_valid_loss <= min(summary_valid_loss):
                 print('New Record!')
                 stop_early = 0
-                saver = tf.train.Saver()
                 saver.save(sess, checkpoint)
 
             else:
