@@ -398,7 +398,6 @@ tf.reset_default_graph()
 
 # Start session
 sess = tf.Session()
-saver = tf.train.Saver()
 
 # Create placeholders for inputs to the model
 # these are initially empty
@@ -491,10 +490,11 @@ total_train_loss = 0
 # Record validation loss for saving improvements in the model
 summary_valid_loss = []
 
-checkpoint = "best_model.ckpt"
+checkpoint = "./best_model.ckpt"
 
 sess.run(tf.global_variables_initializer())
 
+saver = tf.train.Saver()
 saver.restore(sess, checkpoint)
 
 for epoch_i in range(1, epochs + 1):
