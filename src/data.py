@@ -17,7 +17,7 @@ for l in lines:
         line_dict[line[0]] = line[4]
 
 # Create a list of all of the conversations' lines' ids
-convs = [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ","") for l in conv_lines]]
+convs = [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
 
 # Alternative code
 #for l in conv_lines:
@@ -253,7 +253,7 @@ def decoding_layer_train(encoder_state, dec_cell, dec_embed_input, sequence_leng
     attention_states = tf.zeros([batch_size, 1, dec_cell.output_size])
 
     att_keys, att_vals, att_score_fn, att_construct_fn = tf.contrib.seq2seq.prepare_attention(attention_states,
-                                                                                              attention_option="bahdanau",
+                                                                                              attention_option = 'bahdanau',
                                                                                               num_units=dec_cell.output_size)
 
     train_decoder_fn = tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0],
@@ -261,7 +261,7 @@ def decoding_layer_train(encoder_state, dec_cell, dec_embed_input, sequence_leng
                                                                      att_vals,
                                                                      att_score_fn,
                                                                      att_construct_fn,
-                                                                     name = "attn_dec_train")
+                                                                     name = 'attn_dec_train')
 
     train_pred, _, _ = tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
                                                               train_decoder_fn,
@@ -289,7 +289,7 @@ def decoding_layer_infer(encoder_state,
     attention_states = tf.zeros([batch_size, 1, dec_cell.output_size])
 
     att_keys, att_vals, att_score_fn, att_construct_fn = tf.contrib.seq2seq.prepare_attention(attention_states,
-                                                                                              attention_option = "bahdanau",
+                                                                                              attention_option = 'bahdanau',
                                                                                               num_units = dec_cell.output_size)
 
     infer_decoder_fn = tf.contrib.seq2seq.attention_decoder_fn_inference(output_fn,
@@ -303,7 +303,7 @@ def decoding_layer_infer(encoder_state,
                                                                          end_of_sequence_id,
                                                                          maximum_length,
                                                                          vocab_size,
-                                                                         name = "attn_dec_inf")
+                                                                         name = 'attn_dec_inf')
 
     infer_logits, _, _ = tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
                                                                 infer_decoder_fn,
@@ -314,7 +314,7 @@ def decoding_layer_infer(encoder_state,
 # Create decoding cell and input parameters for training and inference decoding layers
 def decoding_layer(dec_embed_input, dec_embeddings, encoder_state, vocab_size, sequence_length, rnn_size, num_layers, vocab_to_int, keep_prob, batch_size):
 
-    with tf.variable_scope("decoding") as decoding_scope:
+    with tf.variable_scope('decoding') as decoding_scope:
         lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
         drop = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob = keep_prob)
         dec_cell = tf.contrib.rnn.MultiRNNCell([drop] * num_layers)
@@ -429,7 +429,7 @@ train_logits, inference_logits = seq2seq_model(tf.reverse(input_data, [-1]),
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
 
-with tf.name_scope("optimization"):
+with tf.name_scope('optimization'):
 
     # Loss function
     cost = tf.contrib.seq2seq.sequence_loss(
@@ -490,7 +490,7 @@ total_train_loss = 0
 # Record validation loss for saving improvements in the model
 summary_valid_loss = []
 
-checkpoint = "./best_model.ckpt"
+checkpoint = './best_model.ckpt'
 
 sess.run(tf.global_variables_initializer())
 
@@ -553,13 +553,13 @@ for epoch_i in range(1, epochs + 1):
                 saver.save(sess, checkpoint)
 
             else:
-                print("No Improvement.")
+                print('No Improvement.')
                 stop_early += 1
                 if stop_early == stop:
                     break
 
     if stop_early == stop:
-        print("Stopping Training.")
+        print('Stopping Training.')
         break
 
 # -------------------------------------- TESTING ------------------
