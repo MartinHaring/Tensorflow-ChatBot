@@ -6,7 +6,7 @@ def process_encoding_input(target_data,
                            vocab_to_int,
                            batch_size):
 
-    slice = \
+    sliced_data = \
         tf.strided_slice(target_data,
                          [0, 0],
                          [batch_size, -1],
@@ -15,7 +15,7 @@ def process_encoding_input(target_data,
     dec_input = \
         tf.concat([tf.fill([batch_size, 1],
                            vocab_to_int['<GO>']),
-                   slice], 1)
+                   sliced_data], 1)
 
     return dec_input
 
