@@ -2,10 +2,20 @@ import tensorflow as tf
 
 
 # Remove last word id from each batch and concat <GO> to the start
-def process_encoding_input(target_data, vocab_to_int, batch_size):
+def process_encoding_input(target_data,
+                           vocab_to_int,
+                           batch_size):
 
-    ending = tf.strided_slice(target_data, [0, 0], [batch_size, -1], [1, 1])
-    dec_input = tf.concat([tf.fill([batch_size, 1], vocab_to_int['<GO>']), ending], 1)
+    slice = \
+        tf.strided_slice(target_data,
+                         [0, 0],
+                         [batch_size, -1],
+                         [1, 1])
+
+    dec_input = \
+        tf.concat([tf.fill([batch_size, 1],
+                           vocab_to_int['<GO>']),
+                   slice], 1)
 
     return dec_input
 
@@ -30,7 +40,7 @@ def decoding_layer_train(encoder_state, dec_cell, dec_embed_input, sequence_leng
     attention_states = tf.zeros([batch_size, 1, dec_cell.output_size])
 
     att_keys, att_vals, att_score_fn, att_construct_fn = tf.contrib.seq2seq.prepare_attention(attention_states,
-                                                                                              attention_option = 'bahdanau',
+                                                                                              attention_option='bahdanau',
                                                                                               num_units=dec_cell.output_size)
 
     train_decoder_fn = tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0],
