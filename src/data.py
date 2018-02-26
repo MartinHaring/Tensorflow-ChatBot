@@ -227,16 +227,6 @@ for length in range(1, max_line_length+1):
 
 # ---------------------------------------------- MODEL --------------------------
 
-
-
-
-
-
-
-
-
-
-
 # Set Hyperparameters
 epochs = 50
 batch_size = 64
@@ -315,9 +305,10 @@ def batch_data(questions, answers, batch_size):
         start_i = batch_i * batch_size
         questions_batch = answers[start_i:start_i + batch_size]
         answers_batch = answers[start_i:start_i + batch_size]
-        pad_questions_batch = np.array(pad_sentence_batch(answers_batch, answers_vocab_to_int))
+        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, questions_vocab_to_int))
         pad_answers_batch = np.array(pad_sentence_batch(answers_batch, answers_vocab_to_int))
         yield pad_questions_batch, pad_answers_batch
+
 
 # Validate the training with 10% of the data
 train_valid_split = int(len(sorted_questions)*0.1)
