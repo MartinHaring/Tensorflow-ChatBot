@@ -21,16 +21,29 @@ def process_encoding_input(target_data,
 
 
 # Create the encoding layer
-def encoding_layer(rnn_inputs, rnn_size, num_layers, keep_prob, sequence_length):
+def encoding_layer(rnn_inputs,
+                   rnn_size,
+                   num_layers,
+                   keep_prob,
+                   sequence_length):
 
-    lstm = tf.contrib.rnn.BasicLSTMCell(rnn_size)
-    drop = tf.contrib.rnn.DropoutWrapper(lstm, input_keep_prob=keep_prob)
-    enc_cell = tf.contrib.rnn.MultiRNNCell([drop] * num_layers)
-    _, enc_state = tf.nn.bidirectional_dynamic_rnn(cell_fw=enc_cell,
-                                                   cell_bw=enc_cell,
-                                                   sequence_length=sequence_length,
-                                                   inputs=rnn_inputs,
-                                                   dtype=tf.float32)
+    lstm = \
+        tf.contrib.rnn.BasicLSTMCell(rnn_size)
+
+    drop = \
+        tf.contrib.rnn.DropoutWrapper(lstm,
+                                      input_keep_prob=keep_prob)
+
+    enc_cell = \
+        tf.contrib.rnn.MultiRNNCell([drop] * num_layers)
+
+    _, enc_state = \
+        tf.nn.bidirectional_dynamic_rnn(cell_fw=enc_cell,
+                                        cell_bw=enc_cell,
+                                        sequence_length=sequence_length,
+                                        inputs=rnn_inputs,
+                                        dtype=tf.float32)
+
     return enc_state
 
 
