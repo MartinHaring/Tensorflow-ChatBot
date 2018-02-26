@@ -195,28 +195,54 @@ def decoding_layer(dec_embed_input,
 
 
 # Use previous functions to create training and inference logits
-def seq2seq_model(input_data, target_data, keep_prob, batch_size, sequence_length, answers_vocab_size, questions_vocab_size, enc_embedding_size, dec_embedding_size, rnn_size, num_layers, questions_vocab_to_int):
+def seq2seq_model(input_data,
+                  target_data,
+                  keep_prob,
+                  batch_size,
+                  sequence_length,
+                  answers_vocab_size,
+                  questions_vocab_size,
+                  enc_embedding_size,
+                  dec_embedding_size,
+                  rnn_size, num_layers,
+                  questions_vocab_to_int):
 
-    enc_embed_input = tf.contrib.layers.embed_sequence(input_data,
-                                                       answers_vocab_size + 1,
-                                                       enc_embedding_size,
-                                                       initializer = tf.random_uniform_initializer(0,1))
+    enc_embed_input = \
+        tf.contrib.layers.embed_sequence(input_data,
+                                         answers_vocab_size + 1,
+                                         enc_embedding_size,
+                                         initializer=tf.random_uniform_initializer(0, 1))
 
-    enc_state = encoding_layer(enc_embed_input, rnn_size, num_layers, keep_prob, sequence_length)
+    enc_state = \
+        encoding_layer(enc_embed_input,
+                       rnn_size,
+                       num_layers,
+                       keep_prob,
+                       sequence_length)
 
-    dec_input = process_encoding_input(target_data, questions_vocab_to_int, batch_size)
-    dec_embeddings = tf.Variable(tf.random_uniform([questions_vocab_size+1, dec_embedding_size], 0, 1))
-    dec_embed_input = tf.nn.embedding_lookup(dec_embeddings, dec_input)
+    dec_input = \
+        process_encoding_input(target_data,
+                               questions_vocab_to_int,
+                               batch_size)
 
-    train_logits, infer_logits = decoding_layer(dec_embed_input,
-                                                dec_embeddings,
-                                                enc_state,
-                                                questions_vocab_size,
-                                                sequence_length,
-                                                rnn_size,
-                                                num_layers,
-                                                questions_vocab_to_int,
-                                                keep_prob,
-                                                batch_size)
+    dec_embeddings = \
+        tf.Variable(tf.random_uniform([questions_vocab_size + 1,
+                                       dec_embedding_size], 0, 1))
+
+    dec_embed_input = \
+        tf.nn.embedding_lookup(dec_embeddings,
+                               dec_input)
+
+    train_logits, infer_logits = \
+        decoding_layer(dec_embed_input,
+                       dec_embeddings,
+                       enc_state,
+                       questions_vocab_size,
+                       sequence_length,
+                       rnn_size,
+                       num_layers,
+                       questions_vocab_to_int,
+                       keep_prob,
+                       batch_size)
 
     return train_logits, infer_logits
