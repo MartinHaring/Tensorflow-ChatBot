@@ -97,7 +97,6 @@ def decoding_layer_infer(encoder_state,
                          vocab_size,
                          decoding_scope,
                          output_fn,
-                         keep_prob,
                          batch_size):
 
     attention_states = \
@@ -167,7 +166,6 @@ def decoding_layer(dec_embed_input, dec_embeddings, encoder_state, vocab_size, s
                                             vocab_size,
                                             decoding_scope,
                                             output_fn,
-                                            keep_prob,
                                             batch_size)
 
         return train_logits, infer_logits
