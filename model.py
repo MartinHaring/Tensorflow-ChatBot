@@ -100,30 +100,35 @@ def decoding_layer_infer(encoder_state,
                          keep_prob,
                          batch_size):
 
-    attention_states = tf.zeros([batch_size, 1, dec_cell.output_size])
+    attention_states = \
+        tf.zeros([batch_size, 1, dec_cell.output_size])
 
-    att_keys, att_vals, att_score_fn, att_construct_fn = tf.contrib.seq2seq.prepare_attention(attention_states,
-                                                                                              attention_option = 'bahdanau',
-                                                                                              num_units = dec_cell.output_size)
+    att_keys, att_vals, att_score_fn, att_construct_fn = \
+        tf.contrib.seq2seq.prepare_attention(attention_states,
+                                             attention_option='bahdanau',
+                                             num_units=dec_cell.output_size)
 
-    infer_decoder_fn = tf.contrib.seq2seq.attention_decoder_fn_inference(output_fn,
-                                                                         encoder_state[0],
-                                                                         att_keys,
-                                                                         att_vals,
-                                                                         att_score_fn,
-                                                                         att_construct_fn,
-                                                                         dec_embeddings,
-                                                                         start_of_sequence_id,
-                                                                         end_of_sequence_id,
-                                                                         maximum_length,
-                                                                         vocab_size,
-                                                                         name = 'attn_dec_inf')
+    infer_decoder_fn = \
+        tf.contrib.seq2seq.attention_decoder_fn_inference(output_fn,
+                                                          encoder_state[0],
+                                                          att_keys,
+                                                          att_vals,
+                                                          att_score_fn,
+                                                          att_construct_fn,
+                                                          dec_embeddings,
+                                                          start_of_sequence_id,
+                                                          end_of_sequence_id,
+                                                          maximum_length,
+                                                          vocab_size,
+                                                          name='attn_dec_inf')
 
-    infer_logits, _, _ = tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
-                                                                infer_decoder_fn,
-                                                                scope = decoding_scope)
+    infer_logits, _, _ = \
+        tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
+                                               infer_decoder_fn,
+                                               scope=decoding_scope)
 
     return infer_logits
+
 
 # Create decoding cell and input parameters for training and inference decoding layers
 def decoding_layer(dec_embed_input, dec_embeddings, encoder_state, vocab_size, sequence_length, rnn_size, num_layers, vocab_to_int, keep_prob, batch_size):
