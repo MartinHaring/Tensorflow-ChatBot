@@ -48,30 +48,44 @@ def encoding_layer(rnn_inputs,
 
 
 # Decode training data
-def decoding_layer_train(encoder_state, dec_cell, dec_embed_input, sequence_length, decoding_scope, output_fn, keep_prob, batch_size):
+def decoding_layer_train(encoder_state,
+                         dec_cell,
+                         dec_embed_input,
+                         sequence_length,
+                         decoding_scope,
+                         output_fn,
+                         keep_prob,
+                         batch_size):
 
-    attention_states = tf.zeros([batch_size, 1, dec_cell.output_size])
+    attention_states = \
+        tf.zeros([batch_size, 1, dec_cell.output_size])
 
-    att_keys, att_vals, att_score_fn, att_construct_fn = tf.contrib.seq2seq.prepare_attention(attention_states,
-                                                                                              attention_option='bahdanau',
-                                                                                              num_units=dec_cell.output_size)
+    att_keys, att_vals, att_score_fn, att_construct_fn = \
+        tf.contrib.seq2seq.prepare_attention(attention_states,
+                                             attention_option='bahdanau',
+                                             num_units=dec_cell.output_size)
 
-    train_decoder_fn = tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0],
-                                                                     att_keys,
-                                                                     att_vals,
-                                                                     att_score_fn,
-                                                                     att_construct_fn,
-                                                                     name = 'attn_dec_train')
+    train_decoder_fn = \
+        tf.contrib.seq2seq.attention_decoder_fn_train(encoder_state[0],
+                                                      att_keys,
+                                                      att_vals,
+                                                      att_score_fn,
+                                                      att_construct_fn,
+                                                      name='attn_dec_train')
 
-    train_pred, _, _ = tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
-                                                              train_decoder_fn,
-                                                              dec_embed_input,
-                                                              sequence_length,
-                                                              scope = decoding_scope)
+    train_pred, _, _ = \
+        tf.contrib.seq2seq.dynamic_rnn_decoder(dec_cell,
+                                               train_decoder_fn,
+                                               dec_embed_input,
+                                               sequence_length,
+                                               scope=decoding_scope)
 
-    train_pred_drop = tf.nn.dropout(train_pred, keep_prob)
+    train_pred_drop = \
+        tf.nn.dropout(train_pred,
+                      keep_prob)
 
     return output_fn(train_pred_drop)
+
 
 # Decode prediction data
 def decoding_layer_infer(encoder_state,
