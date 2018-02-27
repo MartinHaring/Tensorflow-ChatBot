@@ -5,35 +5,13 @@ import time
 from datetime import datetime
 from model import seq2seq_model
 
-# ---------------------------------------- DATA PREPS -------------------------------
 
 # Load data
-lines = open('movie_lines.txt', encoding='utf-8', errors='ignore').read().split('\n')
-conv_lines = open('movie_conversations.txt', encoding='utf-8').read().split('\n')
+def get_data(filename):
+    return open(filename,
+                encoding='utf-8',
+                errors='ignore').read().split('\n')
 
-# Create a dictionary to map each line's id with its text
-line_dict = {}
-for l in lines:
-    line = l.split(' +++$+++ ')
-    if len(line) == 5:
-        line_dict[line[0]] = line[4]
-
-# Create a list of all of the conversations' lines' ids
-convs = [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
-
-# Alternative code
-#for l in conv_lines:
-#    line = l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ","")
-#    convs.append(line.split(','))
-
-# Sort the sentences into questions (inputs) and answers (targets)
-questions = []
-answers = []
-
-for conv in convs:
-    for i in range(len(conv)-1):
-        questions.append(line_dict[conv[i]])
-        answers.append(line_dict[conv[i+1]])
 
 # function to remove unnecessary characters and to alter word formats
 def clean_text(text):
@@ -60,6 +38,36 @@ def clean_text(text):
     text = re.sub(r"[-()\"#/@;:<>{}`+=~|.!?,]", "", text)
 
     return text
+
+
+lines = get_data('movie_lines.txt')
+conv_lines = get_data('movie_conversations.txt')
+
+# Create a dictionary to map each line's id with its text
+line_dict = {}
+for l in lines:
+    line = l.split(' +++$+++ ')
+    if len(line) == 5:
+        line_dict[line[0]] = line[4]
+
+# Create a list of all of the conversations' lines' ids
+convs = [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
+
+# Alternative code
+#for l in conv_lines:
+#    line = l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ","")
+#    convs.append(line.split(','))
+
+# Sort the sentences into questions (inputs) and answers (targets)
+questions = []
+answers = []
+
+for conv in convs:
+    for i in range(len(conv)-1):
+        questions.append(line_dict[conv[i]])
+        answers.append(line_dict[conv[i+1]])
+
+
 
 clean_questions = [clean_text(q) for q in questions]
 clean_answers = [clean_text(a) for a in answers]
