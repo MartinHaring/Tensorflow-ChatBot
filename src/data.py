@@ -13,7 +13,7 @@ def get_data(filename):
                 errors='ignore').read().split('\n')
 
 
-# Fetch max_line_length
+# Fetch max_line_length and min_line_length
 def get_max_min_line_length():
     return params['max_line_length'], params['min_line_length']
 
@@ -21,6 +21,14 @@ def get_max_min_line_length():
 # Create dicts to provide unique ints for each word and vice versa.
 def get_all_vocabs():
     questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
+
+    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
+
+    questions_vocab_to_int = \
+        add_codes(codes, questions_vocab_to_int)
+
+    answers_vocab_to_int = \
+        add_codes(codes, answers_vocab_to_int)
 
     questions_int_to_vocab = \
         {v_i: v for v, v_i in questions_vocab_to_int.items()}
@@ -32,7 +40,17 @@ def get_all_vocabs():
 
 
 def get_questions_answers_vocab_to_int():
+    #----------------------------------------------------------------------------------------------------------WORK HERE----------
     return questions_vocab_to_int, answers_vocab_to_int
+
+
+# Add unique elements to vocabs
+def add_codes(codes, vocab_to_int):
+
+    for c in codes:
+        vocab_to_int[c] = len(vocab_to_int) + 1
+
+    return vocab_to_int
 
 
 # Fetch sorted_questions & sorted_answers
@@ -154,13 +172,6 @@ for word,frequency in vocab.items():
         questions_vocab_to_int[word] = word_id
         answers_vocab_to_int[word] = word_id
         word_id += 1
-
-# Add unique elements
-codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
-
-for c in codes:
-    questions_vocab_to_int[c] = len(questions_vocab_to_int) + 1
-    answers_vocab_to_int[c] = len(answers_vocab_to_int) + 1
 
 # Add the EOS element to every answer
 short_answers = \
