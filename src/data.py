@@ -100,7 +100,7 @@ for l in lines:
 
 # Create a list of all of the conversations' lines' ids
 convs = \
-    [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
+    [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
 
 # Sort the sentences into questions (inputs) and answers (targets)
 questions = []
@@ -138,7 +138,7 @@ short_answers = []
 
 i = 0
 for a in short_answers_temp:
-    if (len(a.split()) >= min_line_length and len(a.split()) <= max_line_length):
+    if len(a.split()) >= min_line_length and len(a.split()) <= max_line_length:
         short_answers.append(a)
         short_questions.append(short_questions_temp[i])
     i += 1
@@ -167,7 +167,7 @@ questions_vocab_to_int = {}
 answers_vocab_to_int = {}
 
 word_id = 0
-for word,frequency in vocab.items():
+for word, frequency in vocab.items():
     if frequency >= threshold:
         questions_vocab_to_int[word] = word_id
         answers_vocab_to_int[word] = word_id
