@@ -1,4 +1,5 @@
 import tensorflow as tf
+import data
 
 # ---------------------------------------------- MODEL --------------------------
 
@@ -36,7 +37,7 @@ keep_prob = \
 
 # Sequence length will be the max line length for each batch
 sequence_length = \
-    tf.placeholder_with_default(max_line_length, None, name='sequence_length')
+    tf.placeholder_with_default(data.get_max_line_length(), None, name='sequence_length')
 
 # Find the shape of the input data for sequence_loss
 input_shape = \

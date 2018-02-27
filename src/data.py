@@ -4,13 +4,21 @@ import re
 import time
 from datetime import datetime
 from model import seq2seq_model
-from tensorflow.contrib.seq2seq import sequence_loss
+
+# Customizable parameters
+params = {'max_line_length': 20}
+
 
 # Load data
 def get_data(filename):
     return open(filename,
                 encoding='utf-8',
                 errors='ignore').read().split('\n')
+
+
+# Fetch max_line_length
+def get_max_line_length():
+    return params['max_line_length']
 
 
 # function to remove unnecessary characters and to alter word formats
