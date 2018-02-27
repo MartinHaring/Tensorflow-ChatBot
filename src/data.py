@@ -1,9 +1,4 @@
-import numpy as np
-import tensorflow as tf
 import re
-import time
-from datetime import datetime
-from model import seq2seq_model
 
 # Customizable parameters
 params = {'max_line_length': 20}
@@ -19,6 +14,11 @@ def get_data(filename):
 # Fetch max_line_length
 def get_max_line_length():
     return params['max_line_length']
+
+
+# Fetch questions_vocab_to_int & answers_vocab_to_int
+def get_questions_answers_vocab_to_int():
+    return questions_int_to_vocab, answers_int_to_vocab
 
 
 # function to remove unnecessary characters and to alter word formats

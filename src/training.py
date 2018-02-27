@@ -1,5 +1,6 @@
 import tensorflow as tf
 import data
+from model import seq2seq_model
 
 # ---------------------------------------------- MODEL --------------------------
 
@@ -43,6 +44,9 @@ sequence_length = \
 input_shape = \
     tf.shape(input_data)
 
+questions_vocab_to_int, answers_vocab_to_int = \
+    data.get_questions_answers_vocab_to_int()
+
 # Create training and inference logits
 train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
@@ -50,8 +54,8 @@ train_logits, inference_logits = \
                   keep_prob,
                   batch_size,
                   sequence_length,
-                  len(answers_vocab_to_int),
-                  len(questions_vocab_to_int),
+                  len(answers_vocab_to_int()),
+                  len(questions_vocab_to_int()),
                   encoding_embedding_size,
                   decoding_embedding_size,
                   rnn_size,
