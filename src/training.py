@@ -49,6 +49,9 @@ input_shape = \
 questions_vocab_to_int, answers_vocab_to_int = \
     data.get_questions_answers_vocab_to_int()
 
+sorted_questions, sorted_answers = \
+    data.get_sorted_questions_answers()
+
 # Create training and inference logits
 train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),

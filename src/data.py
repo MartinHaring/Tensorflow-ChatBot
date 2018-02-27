@@ -21,6 +21,11 @@ def get_questions_answers_vocab_to_int():
     return questions_int_to_vocab, answers_int_to_vocab
 
 
+# Fetch sorted_questions & sorted_answers
+def get_sorted_questions_answers():
+    return sorted_questions, sorted_answers
+
+
 # function to remove unnecessary characters and to alter word formats
 def clean_text(text):
     text = text.lower()
