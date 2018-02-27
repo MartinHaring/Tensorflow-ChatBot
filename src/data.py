@@ -1,7 +1,8 @@
 import re
 
 # Customizable parameters
-params = {'max_line_length': 20}
+params = {'max_line_length': 20,
+          'min_line_length': 2}
 
 
 # Load data
@@ -12,8 +13,8 @@ def get_data(filename):
 
 
 # Fetch max_line_length
-def get_max_line_length():
-    return params['max_line_length']
+def get_max_min_line_length():
+    return params['max_line_length'], params['min_line_length']
 
 
 # Fetch questions_vocab_to_int & answers_vocab_to_int

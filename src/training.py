@@ -40,9 +40,12 @@ lr = \
 keep_prob = \
     tf.placeholder(tf.float32, name='keep_prob')
 
+max_line_length, min_line_length = \
+    data.get_max_min_line_length()
+
 # Sequence length will be the max line length for each batch
 sequence_length = \
-    tf.placeholder_with_default(data.get_max_line_length(), None, name='sequence_length')
+    tf.placeholder_with_default(max_line_length(), None, name='sequence_length')
 
 # Find the shape of the input data for sequence_loss
 input_shape = \
