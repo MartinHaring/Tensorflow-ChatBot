@@ -4,7 +4,7 @@ import re
 import time
 from datetime import datetime
 from model import seq2seq_model
-
+from tensorflow.contrib.seq2seq import sequence_loss
 
 # Load data
 def get_data(filename):
@@ -40,8 +40,11 @@ def clean_text(text):
     return text
 
 
-lines = get_data('movie_lines.txt')
-conv_lines = get_data('movie_conversations.txt')
+lines = \
+    get_data('movie_lines.txt')
+
+conv_lines = \
+    get_data('movie_conversations.txt')
 
 # Create a dictionary to map each line's id with its text
 line_dict = {}
@@ -51,12 +54,8 @@ for l in lines:
         line_dict[line[0]] = line[4]
 
 # Create a list of all of the conversations' lines' ids
-convs = [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
-
-# Alternative code
-#for l in conv_lines:
-#    line = l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(" ","")
-#    convs.append(line.split(','))
+convs = \
+    [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'","").replace(' ','') for l in conv_lines]]
 
 # Sort the sentences into questions (inputs) and answers (targets)
 questions = []
@@ -67,22 +66,11 @@ for conv in convs:
         questions.append(line_dict[conv[i]])
         answers.append(line_dict[conv[i+1]])
 
+clean_questions = \
+    [clean_text(q) for q in questions]
 
-
-clean_questions = [clean_text(q) for q in questions]
-clean_answers = [clean_text(a) for a in answers]
-
-# Find the length of sentences
-#lengths = []
-#for q in clean_questions:
-#    lengths.append(len(q.split()))
-#for a in clean_answers:
-#    lengths.append(len(a.split()))
-
-# Create a dataframe so that the values can be inspected
-#lengths = pd.DataFrame(lengths, columns=['counts'])
-#print(lengths.describe())
-#print(np.percentile(lengths, 80))
+clean_answers = \
+    [clean_text(a) for a in answers]
 
 # Remove too short and too long questions and answers
 min_line_length = 2
@@ -94,7 +82,7 @@ short_answers_temp = []
 
 i = 0
 for q in clean_questions:
-    if (len(q.split()) >= min_line_length and len(q.split()) <= max_line_length):
+    if len(q.split()) >= min_line_length and len(q.split()) <= max_line_length:
         short_questions_temp.append(q)
         short_answers_temp.append(clean_answers[i])
     i += 1
@@ -109,11 +97,6 @@ for a in short_answers_temp:
         short_answers.append(a)
         short_questions.append(short_questions_temp[i])
     i += 1
-
-# Compare numbers, show usage
-#print('# of questions: {}'.format(len(short_questions)))
-#print('# of answers: {}'.format(len(short_answers)))
-#print('% of data used: {}%'.format(round(len(short_questions)/len(questions),4)*100))
 
 # Create a dictionary for the frequency of the vocabulary
 vocab = {}
@@ -153,17 +136,15 @@ for c in codes:
     answers_vocab_to_int[c] = len(answers_vocab_to_int) + 1
 
 # Create dictionaries to map the unique integers to words
-questions_int_to_vocab = {v_i: v for v, v_i in questions_vocab_to_int.items()}
-answers_int_to_vocab = {v_i: v for v, v_i in answers_vocab_to_int.items()}
+questions_int_to_vocab = \
+    {v_i: v for v, v_i in questions_vocab_to_int.items()}
 
-# Check lengths
-#print(len(questions_vocab_to_int))
-#print(len(questions_int_to_vocab))
-#print(len(answers_vocab_to_int))
-#print(len(answers_int_to_vocab))
+answers_int_to_vocab = \
+    {v_i: v for v, v_i in answers_vocab_to_int.items()}
 
 # Add the EOS element to every answer
-short_answers = [a + ' <EOS>' for a in short_answers]
+short_answers = \
+    [a + ' <EOS>' for a in short_answers]
 
 # Convert the text to ints and replace rare words with <UNK>
 int_questions = []
@@ -186,34 +167,7 @@ for a in short_answers:
             ints.append(answers_vocab_to_int[word])
     int_answers.append(ints)
 
-# Check the lengths
-#print(len(questions_int))
-#print(len(answers_int))
-
-# Calculate UNK percentage
-#word_count = 0
-#unk_count = 0
-
-#for q in int_questions:
-#    for word in q:
-#        if word == questions_vocab_to_int['<UNK>']:
-#            unk_count += 1
-#        word_count += 1
-
-#for a in int_answers:
-#    for word in a:
-#        if word == answers_vocab_to_int['<UNK>']:
-#            unk_count += 1
-#        word_count += 1
-
-#unk_ratio = round(unk_count/word_count,4)*100
-
-#print("Total number of words: {}".format(word_count))
-#print("Number of times <UNK> is used: {}".format(unk_count))
-#print("Percent of words that are <UNK>: {}%".format(round(unk_ratio,3)))
-#print()
-
-# Sort questions and answers by length of questions (for bucketing)
+# Sort questions and answers by length of questions
 sorted_questions = []
 sorted_answers = []
 
@@ -225,14 +179,6 @@ for length in range(1, max_line_length+1):
         if len(i[1]) == length:
             sorted_questions.append(int_questions[i[0]])
             sorted_answers.append(int_answers[i[0]])
-
-#print(len(sorted_questions))
-#print(len(sorted_answers))
-#print()
-#for i in range(3):
-#    print(sorted_questions[i])
-#    print(sorted_answers[i])
-#    print()
 
 # ---------------------------------------------- MODEL --------------------------
 
@@ -256,30 +202,40 @@ sess = tf.Session()
 
 # Create placeholders for inputs to the model
 # these are initially empty
-input_data = tf.placeholder(tf.int32, [None, None], name='input')
-targets = tf.placeholder(tf.int32, [None, None], name='targets')
-lr = tf.placeholder(tf.float32, name='learning_rate')
-keep_prob = tf.placeholder(tf.float32, name='keep_prob')
+input_data = \
+    tf.placeholder(tf.int32, [None, None], name='input')
+
+targets = \
+    tf.placeholder(tf.int32, [None, None], name='targets')
+
+lr = \
+    tf.placeholder(tf.float32, name='learning_rate')
+
+keep_prob = \
+    tf.placeholder(tf.float32, name='keep_prob')
 
 # Sequence length will be the max line length for each batch
-sequence_length = tf.placeholder_with_default(max_line_length, None, name='sequence_length')
+sequence_length = \
+    tf.placeholder_with_default(max_line_length, None, name='sequence_length')
 
 # Find the shape of the input data for sequence_loss
-input_shape = tf.shape(input_data)
+input_shape = \
+    tf.shape(input_data)
 
 # Create training and inference logits
-train_logits, inference_logits = seq2seq_model(tf.reverse(input_data, [-1]),
-                                               targets,
-                                               keep_prob,
-                                               batch_size,
-                                               sequence_length,
-                                               len(answers_vocab_to_int),
-                                               len(questions_vocab_to_int),
-                                               encoding_embedding_size,
-                                               decoding_embedding_size,
-                                               rnn_size,
-                                               num_layers,
-                                               questions_vocab_to_int)
+train_logits, inference_logits = \
+    seq2seq_model(tf.reverse(input_data, [-1]),
+                  targets,
+                  keep_prob,
+                  batch_size,
+                  sequence_length,
+                  len(answers_vocab_to_int),
+                  len(questions_vocab_to_int),
+                  encoding_embedding_size,
+                  decoding_embedding_size,
+                  rnn_size,
+                  num_layers,
+                  questions_vocab_to_int)
 
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
@@ -287,25 +243,34 @@ tf.identity(inference_logits, 'logits')
 with tf.name_scope('optimization'):
 
     # Loss function
-    cost = tf.contrib.seq2seq.sequence_loss(
-        train_logits,
-        targets,
-        tf.ones([input_shape[0], sequence_length]))
+    cost = \
+        sequence_loss(train_logits,
+                      targets,
+                      tf.ones([input_shape[0], sequence_length]))
 
     # Optimizer
-    optimizer = tf.train.AdamOptimizer(learning_rate)
+    optimizer = \
+        tf.train.AdamOptimizer(learning_rate)
 
     # Gradient Clipping
-    gradients = optimizer.compute_gradients(cost)
-    capped_gradients = [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
-    train_op = optimizer.apply_gradients(capped_gradients)
+    gradients = \
+        optimizer.compute_gradients(cost)
+
+    capped_gradients = \
+        [(tf.clip_by_value(grad, -5., 5.), var) for grad, var in gradients if grad is not None]
+
+    train_op = \
+        optimizer.apply_gradients(capped_gradients)
+
 
 # Add Padding to each sentence in the batch
 def pad_sentence_batch(sentence_batch, vocab_to_int):
 
-    max_sentence = max([len(sentence) for sentence in sentence_batch])
+    max_sentence = \
+        max([len(sentence) for sentence in sentence_batch])
 
     return [sentence + [vocab_to_int['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
+
 
 # Batch questions and answers together
 def batch_data(questions, answers, batch_size):
@@ -320,17 +285,22 @@ def batch_data(questions, answers, batch_size):
 
 
 # Validate the training with 10% of the data
-train_valid_split = int(len(sorted_questions)*0.1)
+train_valid_split = \
+    int(len(sorted_questions)*0.1)
 
 # Split questions and answers into training and validating data
-train_questions = sorted_questions[train_valid_split:]
-train_answers = sorted_answers[train_valid_split:]
+train_questions = \
+    sorted_questions[train_valid_split:]
 
-valid_questions = sorted_questions[:train_valid_split]
-valid_answers = sorted_answers[:train_valid_split]
+train_answers = \
+    sorted_answers[train_valid_split:]
 
-#print(len(train_questions))
-#print(len(valid_questions))
+valid_questions = \
+    sorted_questions[:train_valid_split]
+
+valid_answers = \
+    sorted_answers[:train_valid_split]
+
 
 # ----------------------------------------- Training -------------------
 
@@ -358,13 +328,13 @@ for epoch_i in range(1, epochs + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, batch_size)):
         start_time = time.time()
 
-        _, loss = sess.run(
-            [train_op, cost],
-            {input_data: questions_batch,
-             targets: answers_batch,
-             lr: learning_rate,
-             sequence_length: answers_batch.shape[1],
-             keep_prob: keep_probability})
+        _, loss = \
+            sess.run([train_op, cost],
+                     {input_data: questions_batch,
+                      targets: answers_batch,
+                      lr: learning_rate,
+                      sequence_length: answers_batch.shape[1],
+                      keep_prob: keep_probability})
 
         total_train_loss += loss
         end_time = time.time()
@@ -429,24 +399,29 @@ def question_to_seq(question, vocab_to_int):
 
 
 # Create input question
-input_question = 'Why is the sky blue?'
+input_question = 'How are you?'
 
 # Use question from data as input
 #random = np.random.choice(len(short_questions))
 #input_question = short_questions[random]
 
 # Prepare question
-input_question = question_to_seq(input_question, questions_vocab_to_int)
+input_question = \
+    question_to_seq(input_question, questions_vocab_to_int)
 
 # Pad the question until it equals the max line length
-input_question = input_question + [questions_vocab_to_int['<PAD>']] * (max_line_length - len(input_question))
+input_question = \
+    input_question + [questions_vocab_to_int['<PAD>']] * (max_line_length - len(input_question))
 
 # Add empty questions so input data is correct shape
-batch_shell = np.zeros((batch_size, max_line_length))
+batch_shell = \
+    np.zeros((batch_size, max_line_length))
 
 # Set first question to be out input question
-answer_logits = sess.run(inference_logits, {input_data: batch_shell,
-                                            keep_prob: 1.0})[0]
+answer_logits = \
+    sess.run(inference_logits,
+             {input_data: batch_shell,
+              keep_prob: 1.0})[0]
 
 # Remove padding from Question and Answer
 pad_q = questions_vocab_to_int['<PAD>']
