@@ -18,8 +18,8 @@ def get_max_min_line_length():
 
 
 # Fetch questions_vocab_to_int & answers_vocab_to_int
-def get_questions_answers_vocab_to_int():
-    return questions_int_to_vocab, answers_int_to_vocab
+def get_all_vocabs():
+    return questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab
 
 
 # Fetch sorted_questions & sorted_answers

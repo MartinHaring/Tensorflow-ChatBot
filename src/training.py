@@ -51,8 +51,8 @@ sequence_length = \
 input_shape = \
     tf.shape(input_data)
 
-questions_vocab_to_int, answers_vocab_to_int = \
-    data.get_questions_answers_vocab_to_int()
+questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab = \
+    data.get_all_vocabs()
 
 sorted_questions, sorted_answers = \
     data.get_sorted_questions_answers()
@@ -230,7 +230,7 @@ for epoch_i in range(1, epochs + 1):
 
 # Prepare question for the model
 def question_to_seq(question, vocab_to_int):
-    question = clean_text(question)
+    question = data.clean_text(question)
     return [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in question.split()]
 
 
