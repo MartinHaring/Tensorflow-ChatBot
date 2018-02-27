@@ -1,5 +1,6 @@
 import tensorflow as tf
 import data
+from tensorflow.contrib.seq2seq import sequence_loss
 from model import seq2seq_model
 
 # ---------------------------------------------- MODEL --------------------------
