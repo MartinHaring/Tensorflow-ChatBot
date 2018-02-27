@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import re
 import time
+from datetime import datetime
 from model import seq2seq_model
 
 # ---------------------------------------- DATA PREPS -------------------------------
@@ -342,7 +343,8 @@ checkpoint = './best_model.ckpt'
 sess.run(tf.global_variables_initializer())
 
 saver = tf.train.Saver()
-saver.restore(sess, checkpoint)
+# ---- do if saver exist
+#saver.restore(sess, checkpoint)
 
 for epoch_i in range(1, epochs + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, batch_size)):
@@ -386,7 +388,7 @@ for epoch_i in range(1, epochs + 1):
             batch_time = end_time - start_time
             avg_valid_loss = total_valid_loss / (len(valid_questions) / batch_size)
 
-            print('Valid Loss: {:>6.3f}, Seconds: {:>5.2f}'.format(avg_valid_loss, batch_time))
+            print('Valid Loss: {:>6.3f}, Seconds: {:>5.2f}, Time: {}'.format(avg_valid_loss, batch_time, str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
             learning_rate *= learning_rate_decay
