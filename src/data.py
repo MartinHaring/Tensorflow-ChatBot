@@ -354,12 +354,13 @@ for epoch_i in range(1, epochs + 1):
             start_time = time.time()
 
             for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, batch_size)):
-                valid_loss = sess.run(
-                    cost, {input_data: questions_batch,
-                           targets: answers_batch,
-                           lr: learning_rate,
-                           sequence_length: answers_batch.shape[1],
-                           keep_prob: 1})
+                valid_loss = \
+                    sess.run(cost,
+                             {input_data: questions_batch,
+                              targets: answers_batch,
+                              lr: learning_rate,
+                              sequence_length: answers_batch.shape[1],
+                              keep_prob: 1})
                 total_valid_loss += valid_loss
 
             end_time = time.time()
