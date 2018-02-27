@@ -18,9 +18,21 @@ def get_max_min_line_length():
     return params['max_line_length'], params['min_line_length']
 
 
-# Fetch questions_vocab_to_int & answers_vocab_to_int
+# Create dicts to provide unique ints for each word and vice versa.
 def get_all_vocabs():
+    questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
+
+    questions_int_to_vocab = \
+        {v_i: v for v, v_i in questions_vocab_to_int.items()}
+
+    answers_int_to_vocab = \
+        {v_i: v for v, v_i in answers_vocab_to_int.items()}
+
     return questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab
+
+
+def get_questions_answers_vocab_to_int():
+    return questions_vocab_to_int, answers_vocab_to_int
 
 
 # Fetch sorted_questions & sorted_answers
@@ -149,13 +161,6 @@ codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
 for c in codes:
     questions_vocab_to_int[c] = len(questions_vocab_to_int) + 1
     answers_vocab_to_int[c] = len(answers_vocab_to_int) + 1
-
-# Create dictionaries to map the unique integers to words
-questions_int_to_vocab = \
-    {v_i: v for v, v_i in questions_vocab_to_int.items()}
-
-answers_int_to_vocab = \
-    {v_i: v for v, v_i in answers_vocab_to_int.items()}
 
 # Add the EOS element to every answer
 short_answers = \
