@@ -1,7 +1,9 @@
 import tensorflow as tf
 import numpy as np
 import data
+import time
 from tensorflow.contrib.seq2seq import sequence_loss
+from datetime import datetime
 from model import seq2seq_model
 
 # ---------------------------------------------- MODEL --------------------------
