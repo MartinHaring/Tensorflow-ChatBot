@@ -2,7 +2,8 @@ import re
 
 # Customizable parameters
 params = {'max_line_length': 20,
-          'min_line_length': 2}
+          'min_line_length': 2,
+          'threshold': 10}
 
 
 # Load data
@@ -87,8 +88,8 @@ clean_answers = \
     [clean_text(a) for a in answers]
 
 # Remove too short and too long questions and answers
-min_line_length = 2
-max_line_length = 20
+min_line_length = params['min_line_length']
+max_line_length = params['max_line_length']
 
 # Filter out questions with inappropriate lengths
 short_questions_temp = []
@@ -129,7 +130,7 @@ for a in short_answers:
             vocab[word] += 1
 
 # Set threshold for rare words
-threshold = 10
+threshold = params['threshold']
 
 # Create dicts to provide unique ints for each word.
 questions_vocab_to_int = {}
