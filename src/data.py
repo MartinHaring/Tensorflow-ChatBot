@@ -118,7 +118,28 @@ def add_codes(codes, vocab_to_int):
     return vocab_to_int
 
 
+def get_convs():
+    return convs
+
+
+def get_line_dict():
+    return line_dict
+
+
 def get_questions_answers():
+
+    convs = get_convs()
+    line_dict = get_line_dict()
+
+    # Sort the sentences into questions (inputs) and answers (targets)
+    questions = []
+    answers = []
+
+    for conv in convs:
+        for i in range(len(conv)-1):
+            questions.append(line_dict[conv[i]])
+            answers.append(line_dict[conv[i+1]])
+
     return questions, answers
 
 
@@ -240,11 +261,4 @@ for l in lines:
 convs = \
     [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
 
-# Sort the sentences into questions (inputs) and answers (targets)
-questions = []
-answers = []
 
-for conv in convs:
-    for i in range(len(conv)-1):
-        questions.append(line_dict[conv[i]])
-        answers.append(line_dict[conv[i+1]])
