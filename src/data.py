@@ -119,6 +119,11 @@ def add_codes(codes, vocab_to_int):
 
 
 def get_convs():
+
+    # Create a list of all of the conversations' lines' ids
+    convs = \
+        [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
+
     return convs
 
 
@@ -257,8 +262,5 @@ for l in lines:
     if len(line) == 5:
         line_dict[line[0]] = line[4]
 
-# Create a list of all of the conversations' lines' ids
-convs = \
-    [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
 
 
