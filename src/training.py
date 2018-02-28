@@ -9,16 +9,16 @@ from model import seq2seq_model
 # ---------------------------------------------- MODEL --------------------------
 
 # Set Hyperparameters
-epochs = 50
+epochs = 5
 batch_size = 64
 rnn_size = 256
 num_layers = 2
 encoding_embedding_size = 256
 decoding_embedding_size = 256
 learning_rate = 0.005
-learning_rate_decay = 0.9
+learning_rate_decay = 0.95
 min_learning_rate = 0.0001
-keep_probability = 0.75
+keep_probability = 0.8
 
 # Reset the graph to ensure that it is ready for training
 tf.reset_default_graph()
@@ -45,7 +45,7 @@ max_line_length, min_line_length = \
 
 # Sequence length will be the max line length for each batch
 sequence_length = \
-    tf.placeholder_with_default(max_line_length(), None, name='sequence_length')
+    tf.placeholder_with_default(max_line_length, None, name='sequence_length')
 
 # Find the shape of the input data for sequence_loss
 input_shape = \
