@@ -1,12 +1,11 @@
 import re
 
-# Customizable parameters
 params = {'max_line_length': 20,
           'min_line_length': 2,
           'threshold': 10}
 
 
-# function to remove unnecessary characters and to alter word formats
+# Remove unnecessary characters and alter word formats
 def clean_text(text):
     text = text.lower()
 
@@ -42,12 +41,15 @@ def get_data(filename):
 
 # Fetch max_line_length and min_line_length
 def get_max_min_line_length():
-    return params['max_line_length'], params['min_line_length']
+    return params['max_line_length'], \
+           params['min_line_length']
 
 
-# Create dicts to provide unique ints for each word and vice versa.
+# Create dicts to provide unique ints for each word and vice versa
 def get_all_vocabs():
-    questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
+
+    questions_vocab_to_int, answers_vocab_to_int = \
+        get_questions_answers_vocab_to_int()
 
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
 
@@ -66,11 +68,12 @@ def get_all_vocabs():
     return questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab
 
 
+# Create a dictionary for the frequency of the vocabulary
 def get_vocab():
 
-    short_questions, short_answers = get_short_questions_answers()
+    short_questions, short_answers = \
+        get_short_questions_answers()
 
-    # Create a dictionary for the frequency of the vocabulary
     vocab = {}
     for q in short_questions:
         for word in q.split():
@@ -89,11 +92,11 @@ def get_vocab():
     return vocab
 
 
+# Create dicts to provide unique ints for each word
 def get_questions_answers_vocab_to_int():
 
     vocab = get_vocab()
 
-    # Create dicts to provide unique ints for each word.
     questions_vocab_to_int = {}
     answers_vocab_to_int = {}
 
@@ -118,22 +121,23 @@ def add_codes(codes, vocab_to_int):
     return vocab_to_int
 
 
+# Create a list of all of the conversations' lines' ids
 def get_convs():
 
     conv_lines = get_data('movie_conversations.txt')
 
-    # Create a list of all of the conversations' lines' ids
     convs = \
-        [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
+        [id_list.split(',') for id_list
+         in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
 
     return convs
 
 
+# Create a dictionary to map each line's id with its text
 def get_line_dict():
 
     lines = get_data('movie_lines.txt')
 
-    # Create a dictionary to map each line's id with its text
     line_dict = {}
     for l in lines:
         line = l.split(' +++$+++ ')
@@ -143,12 +147,12 @@ def get_line_dict():
     return line_dict
 
 
+# Sort the sentences into questions (inputs) and answers (targets)
 def get_questions_answers():
 
     convs = get_convs()
     line_dict = get_line_dict()
 
-    # Sort the sentences into questions (inputs) and answers (targets)
     questions = []
     answers = []
 
@@ -162,7 +166,8 @@ def get_questions_answers():
 
 def get_clean_questions_answers():
 
-    questions, answers = get_questions_answers()
+    questions, answers = \
+        get_questions_answers()
 
     clean_questions = \
         [clean_text(q) for q in questions]
@@ -173,6 +178,7 @@ def get_clean_questions_answers():
     return clean_questions, clean_answers
 
 
+# Filter out questions with inappropriate lengths. Also, add the EOS element to every answer
 def get_short_questions_answers():
 
     clean_questions, clean_answers = get_clean_questions_answers()
@@ -180,7 +186,6 @@ def get_short_questions_answers():
     min_line_length = params['min_line_length']
     max_line_length = params['max_line_length']
 
-    # Filter out questions with inappropriate lengths
     short_questions_temp = []
     short_answers_temp = []
 
@@ -191,7 +196,6 @@ def get_short_questions_answers():
             short_answers_temp.append(clean_answers[i])
         i += 1
 
-    # Filter out answers with inappropriate lengths
     short_questions = []
     short_answers = []
 
@@ -202,19 +206,18 @@ def get_short_questions_answers():
             short_questions.append(short_questions_temp[i])
         i += 1
 
-    # Add the EOS element to every answer
     short_answers = \
         [a + ' <EOS>' for a in short_answers]
 
     return short_questions, short_answers
 
 
+# Convert the text to ints and replace rare words with <UNK>
 def get_int_questions_answers():
 
     short_questions, short_answers = get_short_questions_answers()
     questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
 
-    # Convert the text to ints and replace rare words with <UNK>
     int_questions = []
     for q in short_questions:
         ints = []
@@ -245,13 +248,9 @@ def get_sorted_questions_answers():
 
     int_questions, int_answers = get_int_questions_answers()
 
-    # Sort questions and answers by length of questions
     sorted_questions = []
     sorted_answers = []
 
-    # i is a tuple of index + [int].
-    # if len([int]) == length,
-    # the question with the corresponding index is added to sorted.
     for length in range(1, max_line_length+1):
         for i in enumerate(int_questions):
             if len(i[1]) == length:
