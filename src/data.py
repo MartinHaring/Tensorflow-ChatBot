@@ -50,14 +50,6 @@ def get_all_vocabs():
     questions_vocab_to_int, answers_vocab_to_int = \
         get_questions_answers_vocab_to_int()
 
-    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
-
-    questions_vocab_to_int = \
-        add_codes(codes, questions_vocab_to_int)
-
-    answers_vocab_to_int = \
-        add_codes(codes, answers_vocab_to_int)
-
     questions_int_to_vocab = \
         {v_i: v for v, v_i in questions_vocab_to_int.items()}
 
@@ -107,6 +99,15 @@ def get_questions_answers_vocab_to_int():
             questions_vocab_to_int[word] = word_id
             answers_vocab_to_int[word] = word_id
             word_id += 1
+
+
+    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
+
+    questions_vocab_to_int = \
+        add_codes(codes, questions_vocab_to_int)
+
+    answers_vocab_to_int = \
+        add_codes(codes, answers_vocab_to_int)
 
     return questions_vocab_to_int, answers_vocab_to_int
 
