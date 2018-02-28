@@ -97,6 +97,8 @@ def get_questions_answers_vocab_to_int():
     questions_vocab_to_int = {}
     answers_vocab_to_int = {}
 
+    threshold = params['threshold']
+
     word_id = 0
     for word, frequency in vocab.items():
         if frequency >= threshold:
@@ -117,6 +119,9 @@ def add_codes(codes, vocab_to_int):
 
 
 def get_short_questions_answers():
+
+    min_line_length = params['min_line_length']
+    max_line_length = params['max_line_length']
 
     # Filter out questions with inappropriate lengths
     short_questions_temp = []
@@ -179,6 +184,8 @@ def get_int_questions_answers():
 # Fetch sorted_questions & sorted_answers
 def get_sorted_questions_answers():
 
+    max_line_length = params['max_line_length']
+
     int_questions, int_answers = get_int_questions_answers()
 
     # Sort questions and answers by length of questions
@@ -229,10 +236,7 @@ clean_questions = \
 clean_answers = \
     [clean_text(a) for a in answers]
 
-# Remove too short and too long questions and answers
-min_line_length = params['min_line_length']
-max_line_length = params['max_line_length']
 
-# Set threshold for rare words
-threshold = params['threshold']
+
+
 
