@@ -55,6 +55,20 @@ def add_codes(codes, vocab_to_int):
 
 # Fetch sorted_questions & sorted_answers
 def get_sorted_questions_answers():
+
+    # Sort questions and answers by length of questions
+    sorted_questions = []
+    sorted_answers = []
+
+    # i is a tuple of index + [int].
+    # if len([int]) == length,
+    # the question with the corresponding index is added to sorted.
+    for length in range(1, max_line_length+1):
+        for i in enumerate(int_questions):
+            if len(i[1]) == length:
+                sorted_questions.append(int_questions[i[0]])
+                sorted_answers.append(int_answers[i[0]])
+
     return sorted_questions, sorted_answers
 
 
@@ -197,16 +211,3 @@ for a in short_answers:
         else:
             ints.append(answers_vocab_to_int[word])
     int_answers.append(ints)
-
-# Sort questions and answers by length of questions
-sorted_questions = []
-sorted_answers = []
-
-# i is a tuple of index + [int].
-# if len([int]) == length,
-# the question with the corresponding index is added to sorted.
-for length in range(1, max_line_length+1):
-    for i in enumerate(int_questions):
-        if len(i[1]) == length:
-            sorted_questions.append(int_questions[i[0]])
-            sorted_answers.append(int_answers[i[0]])
