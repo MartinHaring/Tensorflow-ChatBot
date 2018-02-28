@@ -41,8 +41,7 @@ def get_data(filename):
 
 # Fetch max_line_length and min_line_length
 def get_max_min_line_length():
-    return params['max_line_length'], \
-           params['min_line_length']
+    return params['max_line_length'], params['min_line_length']
 
 
 # Create dicts to provide unique ints for each word and vice versa
