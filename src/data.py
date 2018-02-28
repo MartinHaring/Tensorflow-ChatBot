@@ -53,8 +53,35 @@ def add_codes(codes, vocab_to_int):
     return vocab_to_int
 
 
+def get_int_questions_answers():
+    # Convert the text to ints and replace rare words with <UNK>
+    int_questions = []
+    for q in short_questions:
+        ints = []
+        for word in q.split():
+            if word not in questions_vocab_to_int:
+                ints.append(questions_vocab_to_int['<UNK>'])
+            else:
+                ints.append(questions_vocab_to_int[word])
+        int_questions.append(ints)
+
+    int_answers = []
+    for a in short_answers:
+        ints = []
+        for word in a.split():
+            if word not in answers_vocab_to_int:
+                ints.append(answers_vocab_to_int['<UNK>'])
+            else:
+                ints.append(answers_vocab_to_int[word])
+        int_answers.append(ints)
+
+    return int_questions, int_answers
+
+
 # Fetch sorted_questions & sorted_answers
 def get_sorted_questions_answers():
+
+    int_questions, int_answers = get_int_questions_answers()
 
     # Sort questions and answers by length of questions
     sorted_questions = []
@@ -190,24 +217,3 @@ for word, frequency in vocab.items():
 # Add the EOS element to every answer
 short_answers = \
     [a + ' <EOS>' for a in short_answers]
-
-# Convert the text to ints and replace rare words with <UNK>
-int_questions = []
-for q in short_questions:
-    ints = []
-    for word in q.split():
-        if word not in questions_vocab_to_int:
-            ints.append(questions_vocab_to_int['<UNK>'])
-        else:
-            ints.append(questions_vocab_to_int[word])
-    int_questions.append(ints)
-
-int_answers = []
-for a in short_answers:
-    ints = []
-    for word in a.split():
-        if word not in answers_vocab_to_int:
-            ints.append(answers_vocab_to_int['<UNK>'])
-        else:
-            ints.append(answers_vocab_to_int[word])
-    int_answers.append(ints)
