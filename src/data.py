@@ -66,7 +66,32 @@ def get_all_vocabs():
     return questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab
 
 
+def get_vocab():
+
+    short_questions, short_answers = get_short_questions_answers()
+
+    # Create a dictionary for the frequency of the vocabulary
+    vocab = {}
+    for q in short_questions:
+        for word in q.split():
+            if word not in vocab:
+                vocab[word] = 1
+            else:
+                vocab[word] += 1
+
+    for a in short_answers:
+        for word in a.split():
+            if word not in vocab:
+                vocab[word] = 1
+            else:
+                vocab[word] += 1
+
+    return vocab
+
+
 def get_questions_answers_vocab_to_int():
+
+    vocab = get_vocab()
 
     # Create dicts to provide unique ints for each word.
     questions_vocab_to_int = {}
@@ -114,22 +139,6 @@ def get_short_questions_answers():
             short_answers.append(a)
             short_questions.append(short_questions_temp[i])
         i += 1
-
-    # Create a dictionary for the frequency of the vocabulary
-    vocab = {}
-    for q in short_questions:
-        for word in q.split():
-            if word not in vocab:
-                vocab[word] = 1
-            else:
-                vocab[word] += 1
-
-    for a in short_answers:
-        for word in a.split():
-            if word not in vocab:
-                vocab[word] = 1
-            else:
-                vocab[word] += 1
 
     # Add the EOS element to every answer
     short_answers = \
