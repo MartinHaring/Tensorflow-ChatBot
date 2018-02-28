@@ -120,6 +120,8 @@ def add_codes(codes, vocab_to_int):
 
 def get_convs():
 
+    conv_lines = get_data('movie_conversations.txt')
+
     # Create a list of all of the conversations' lines' ids
     convs = \
         [id_list.split(',') for id_list in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
@@ -128,6 +130,16 @@ def get_convs():
 
 
 def get_line_dict():
+
+    lines = get_data('movie_lines.txt')
+
+    # Create a dictionary to map each line's id with its text
+    line_dict = {}
+    for l in lines:
+        line = l.split(' +++$+++ ')
+        if len(line) == 5:
+            line_dict[line[0]] = line[4]
+
     return line_dict
 
 
@@ -247,20 +259,3 @@ def get_sorted_questions_answers():
                 sorted_answers.append(int_answers[i[0]])
 
     return sorted_questions, sorted_answers
-
-
-lines = \
-    get_data('movie_lines.txt')
-
-conv_lines = \
-    get_data('movie_conversations.txt')
-
-# Create a dictionary to map each line's id with its text
-line_dict = {}
-for l in lines:
-    line = l.split(' +++$+++ ')
-    if len(line) == 5:
-        line_dict[line[0]] = line[4]
-
-
-
