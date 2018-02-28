@@ -118,7 +118,26 @@ def add_codes(codes, vocab_to_int):
     return vocab_to_int
 
 
+def get_questions_answers():
+    return questions, answers
+
+
+def get_clean_questions_answers():
+
+    questions, answers = get_questions_answers()
+
+    clean_questions = \
+        [clean_text(q) for q in questions]
+
+    clean_answers = \
+        [clean_text(a) for a in answers]
+
+    return clean_questions, clean_answers
+
+
 def get_short_questions_answers():
+
+    clean_questions, clean_answers = get_clean_questions_answers()
 
     min_line_length = params['min_line_length']
     max_line_length = params['max_line_length']
@@ -229,14 +248,3 @@ for conv in convs:
     for i in range(len(conv)-1):
         questions.append(line_dict[conv[i]])
         answers.append(line_dict[conv[i+1]])
-
-clean_questions = \
-    [clean_text(q) for q in questions]
-
-clean_answers = \
-    [clean_text(a) for a in answers]
-
-
-
-
-
