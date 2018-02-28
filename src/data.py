@@ -67,7 +67,18 @@ def get_all_vocabs():
 
 
 def get_questions_answers_vocab_to_int():
-    #----------------------------------------------------------------------------------------------------------WORK HERE----------
+
+    # Create dicts to provide unique ints for each word.
+    questions_vocab_to_int = {}
+    answers_vocab_to_int = {}
+
+    word_id = 0
+    for word, frequency in vocab.items():
+        if frequency >= threshold:
+            questions_vocab_to_int[word] = word_id
+            answers_vocab_to_int[word] = word_id
+            word_id += 1
+
     return questions_vocab_to_int, answers_vocab_to_int
 
 
@@ -80,7 +91,58 @@ def add_codes(codes, vocab_to_int):
     return vocab_to_int
 
 
+def get_short_questions_answers():
+
+    # Filter out questions with inappropriate lengths
+    short_questions_temp = []
+    short_answers_temp = []
+
+    i = 0
+    for q in clean_questions:
+        if len(q.split()) >= min_line_length and len(q.split()) <= max_line_length:
+            short_questions_temp.append(q)
+            short_answers_temp.append(clean_answers[i])
+        i += 1
+
+    # Filter out answers with inappropriate lengths
+    short_questions = []
+    short_answers = []
+
+    i = 0
+    for a in short_answers_temp:
+        if len(a.split()) >= min_line_length and len(a.split()) <= max_line_length:
+            short_answers.append(a)
+            short_questions.append(short_questions_temp[i])
+        i += 1
+
+    # Create a dictionary for the frequency of the vocabulary
+    vocab = {}
+    for q in short_questions:
+        for word in q.split():
+            if word not in vocab:
+                vocab[word] = 1
+            else:
+                vocab[word] += 1
+
+    for a in short_answers:
+        for word in a.split():
+            if word not in vocab:
+                vocab[word] = 1
+            else:
+                vocab[word] += 1
+
+    # Add the EOS element to every answer
+    short_answers = \
+        [a + ' <EOS>' for a in short_answers]
+
+    return short_questions, short_answers
+
+
 def get_int_questions_answers():
+
+    short_questions, short_answers = get_short_questions_answers()
+    questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
+
     # Convert the text to ints and replace rare words with <UNK>
     int_questions = []
     for q in short_questions:
@@ -162,58 +224,6 @@ clean_answers = \
 min_line_length = params['min_line_length']
 max_line_length = params['max_line_length']
 
-# Filter out questions with inappropriate lengths
-short_questions_temp = []
-short_answers_temp = []
-
-i = 0
-for q in clean_questions:
-    if len(q.split()) >= min_line_length and len(q.split()) <= max_line_length:
-        short_questions_temp.append(q)
-        short_answers_temp.append(clean_answers[i])
-    i += 1
-
-# Filter out answers with inappropriate lengths
-short_questions = []
-short_answers = []
-
-i = 0
-for a in short_answers_temp:
-    if len(a.split()) >= min_line_length and len(a.split()) <= max_line_length:
-        short_answers.append(a)
-        short_questions.append(short_questions_temp[i])
-    i += 1
-
-# Create a dictionary for the frequency of the vocabulary
-vocab = {}
-for q in short_questions:
-    for word in q.split():
-        if word not in vocab:
-            vocab[word] = 1
-        else:
-            vocab[word] += 1
-
-for a in short_answers:
-    for word in a.split():
-        if word not in vocab:
-            vocab[word] = 1
-        else:
-            vocab[word] += 1
-
 # Set threshold for rare words
 threshold = params['threshold']
 
-# Create dicts to provide unique ints for each word.
-questions_vocab_to_int = {}
-answers_vocab_to_int = {}
-
-word_id = 0
-for word, frequency in vocab.items():
-    if frequency >= threshold:
-        questions_vocab_to_int[word] = word_id
-        answers_vocab_to_int[word] = word_id
-        word_id += 1
-
-# Add the EOS element to every answer
-short_answers = \
-    [a + ' <EOS>' for a in short_answers]
