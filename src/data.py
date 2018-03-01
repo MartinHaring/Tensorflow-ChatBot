@@ -144,16 +144,12 @@ def get_qa():
     return questions, answers
 
 
-def get_clean_questions_answers():
+def get_clean_qa():
 
-    questions, answers = \
-        get_qa()
+    questions, answers = get_qa()
 
-    clean_questions = \
-        [clean_text(q) for q in questions]
-
-    clean_answers = \
-        [clean_text(a) for a in answers]
+    clean_questions = [clean_text(q) for q in questions]
+    clean_answers = [clean_text(a) for a in answers]
 
     return clean_questions, clean_answers
 
@@ -161,7 +157,7 @@ def get_clean_questions_answers():
 # Filter out questions with inappropriate lengths. Also, add the EOS element to every answer
 def get_short_qa():
 
-    clean_questions, clean_answers = get_clean_questions_answers()
+    clean_questions, clean_answers = get_clean_qa()
 
     min_line_length = params['min_line_length']
     max_line_length = params['max_line_length']
