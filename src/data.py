@@ -5,59 +5,6 @@ params = {'max_line_length': 20,
           'threshold': 10}
 
 
-# Load all lines from a file
-def load_lines(filename):
-    return open(filename,
-                encoding='utf-8',
-                errors='ignore').read().split('\n')
-
-
-# Create a dictionary to map each line's id with its text
-def create_line_dict(lines):
-    return {line[0]: line[4]
-            for line
-            in [l.split(' +++$+++ ')
-                for l
-                in lines]
-            if len(line) == 5}
-
-
-# Create a list of all of the conversations' lines' ids
-def get_convs(conv_lines):
-    return [id_list.split(',')
-            for id_list
-            in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '')
-                for l
-                in conv_lines]]
-
-
-# Remove unnecessary characters and alter word formats
-def clean_text(text):
-
-    text = text.lower()
-    text = re.sub(r"i'm", 'i am', text)
-    text = re.sub(r"he's", 'he is', text)
-    text = re.sub(r"she's", 'she is', text)
-    text = re.sub(r"it's", 'it is', text)
-    text = re.sub(r"that's", 'that is', text)
-    text = re.sub(r"what's", 'what is', text)
-    text = re.sub(r"where's", 'where is', text)
-    text = re.sub(r"how's", 'how is', text)
-    text = re.sub(r"\'ll", ' will', text)
-    text = re.sub(r"\'ve", ' have', text)
-    text = re.sub(r"\'re", ' are', text)
-    text = re.sub(r"\'d", ' would', text)
-    text = re.sub(r"won't", 'will not', text)
-    text = re.sub(r"can't", 'cannot', text)
-    text = re.sub(r"n't", ' not', text)
-    text = re.sub(r"n'", 'ng', text)
-    text = re.sub(r"'bout", 'about', text)
-    text = re.sub(r"'til", 'until', text)
-    text = re.sub(r"[-()\"#/@;:<>{}`+=~|.!?,]", "", text)
-
-    return text
-
-
 # Create a vocabulary, containing the frequency of each word of a given list
 def fill_vocab(vocab, short_qa):
 
@@ -120,21 +67,74 @@ def get_word_dicts():
     return vocab_to_int, int_to_vocab
 
 
+# Load all lines from a file
+def load_lines(filename):
+    return open(filename,
+                encoding='utf-8',
+                errors='ignore').read().split('\n')
+
+
+# Create a dictionary to map each line's id with its text
+def create_line_dict(lines):
+    return {line[0]: line[4]
+            for line
+            in [l.split(' +++$+++ ')
+                for l
+                in lines]
+            if len(line) == 5}
+
+
+# Create a list of all of the conversations' lines' ids
+def get_convs(conv_lines):
+    return [id_list.split(',')
+            for id_list
+            in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '')
+                for l
+                in conv_lines]]
+
+
 # Sort the sentences into questions (inputs) and answers (targets)
 def get_qa():
 
     convs = get_convs(load_lines('movie_conversations.txt'))
     line_dict = create_line_dict(load_lines('movie_lines.txt'))
 
-    questions = []
-    answers = []
+    questions = [line_dict[conv[i]]
+                 for conv in convs
+                 for i in range(len(conv)-1)]
 
-    for conv in convs:
-        for i in range(len(conv)-1):
-            questions.append(line_dict[conv[i]])
-            answers.append(line_dict[conv[i+1]])
+    answers = [line_dict[conv[i+1]]
+               for conv in convs
+               for i in range(len(conv)-1)]
 
     return questions, answers
+
+
+# Remove unnecessary characters and alter word formats
+def clean_text(text):
+
+    text = text.lower()
+    text = re.sub(r"i'm", 'i am', text)
+    text = re.sub(r"he's", 'he is', text)
+    text = re.sub(r"she's", 'she is', text)
+    text = re.sub(r"it's", 'it is', text)
+    text = re.sub(r"that's", 'that is', text)
+    text = re.sub(r"what's", 'what is', text)
+    text = re.sub(r"where's", 'where is', text)
+    text = re.sub(r"how's", 'how is', text)
+    text = re.sub(r"\'ll", ' will', text)
+    text = re.sub(r"\'ve", ' have', text)
+    text = re.sub(r"\'re", ' are', text)
+    text = re.sub(r"\'d", ' would', text)
+    text = re.sub(r"won't", 'will not', text)
+    text = re.sub(r"can't", 'cannot', text)
+    text = re.sub(r"n't", ' not', text)
+    text = re.sub(r"n'", 'ng', text)
+    text = re.sub(r"'bout", 'about', text)
+    text = re.sub(r"'til", 'until', text)
+    text = re.sub(r"[-()\"#/@;:<>{}`+=~|.!?,]", "", text)
+
+    return text
 
 
 # Format questions and answers appropriately. Also, add the EOS element to every answer
