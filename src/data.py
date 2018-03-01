@@ -22,6 +22,15 @@ def create_line_dict(lines):
             if len(line) == 5}
 
 
+# Create a list of all of the conversations' lines' ids
+def get_convs(conv_lines):
+    return [id_list.split(',')
+            for id_list
+            in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '')
+                for l
+                in conv_lines]]
+
+
 # Remove unnecessary characters and alter word formats
 def clean_text(text):
 
@@ -111,22 +120,10 @@ def get_word_dicts():
     return vocab_to_int, int_to_vocab
 
 
-# Create a list of all of the conversations' lines' ids
-def get_convs():
-
-    conv_lines = load_lines('movie_conversations.txt')
-
-    convs = \
-        [id_list.split(',') for id_list
-         in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in conv_lines]]
-
-    return convs
-
-
 # Sort the sentences into questions (inputs) and answers (targets)
 def get_qa():
 
-    convs = get_convs()
+    convs = get_convs(load_lines('movie_conversations.txt'))
     line_dict = create_line_dict(load_lines('movie_lines.txt'))
 
     questions = []
