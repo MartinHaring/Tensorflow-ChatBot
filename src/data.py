@@ -5,6 +5,23 @@ params = {'max_line_length': 20,
           'threshold': 10}
 
 
+# Load all lines from a file
+def load_lines(filename):
+    return open(filename,
+                encoding='utf-8',
+                errors='ignore').read().split('\n')
+
+
+# Create a dictionary to map each line's id with its text
+def create_line_dict(lines):
+    return {line[0]: line[4]
+            for line
+            in [l.split(' +++$+++ ')
+                for l
+                in lines]
+            if len(line) == 5}
+
+
 # Remove unnecessary characters and alter word formats
 def clean_text(text):
 
@@ -30,13 +47,6 @@ def clean_text(text):
     text = re.sub(r"[-()\"#/@;:<>{}`+=~|.!?,]", "", text)
 
     return text
-
-
-# Load all lines from a file
-def load_lines(filename):
-    return open(filename,
-                encoding='utf-8',
-                errors='ignore').read().split('\n')
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
@@ -113,25 +123,11 @@ def get_convs():
     return convs
 
 
-# Create a dictionary to map each line's id with its text
-def get_line_dict():
-
-    lines = load_lines('movie_lines.txt')
-
-    line_dict = {}
-    for l in lines:
-        line = l.split(' +++$+++ ')
-        if len(line) == 5:
-            line_dict[line[0]] = line[4]
-
-    return line_dict
-
-
 # Sort the sentences into questions (inputs) and answers (targets)
 def get_qa():
 
     convs = get_convs()
-    line_dict = get_line_dict()
+    line_dict = create_line_dict(load_lines('movie_lines.txt'))
 
     questions = []
     answers = []
