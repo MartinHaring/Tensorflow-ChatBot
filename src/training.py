@@ -155,9 +155,11 @@ checkpoint = './best_model.ckpt'
 
 sess.run(tf.global_variables_initializer())
 
-saver = tf.train.Saver()
-# ---- do if saver exist
-#saver.restore(sess, checkpoint)
+if tf.train.checkpoint_exists(checkpoint):
+    saver = tf.train.import_meta_graph(checkpoint + '.meta')
+    saver.restore(sess, checkpoint)
+else:
+    saver = tf.train.Saver()
 
 for epoch_i in range(1, epochs + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, batch_size)):
