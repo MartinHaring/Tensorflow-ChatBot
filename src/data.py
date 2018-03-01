@@ -43,7 +43,7 @@ def load_lines(filename):
 def get_word_dicts():
 
     q_vocab_to_int, a_vocab_to_int = \
-        get_questions_answers_vocab_to_int()
+        get_qa_vocab_to_int()
 
     q_int_to_vocab = \
         {v_i: v for v, v_i in q_vocab_to_int.items()}
@@ -79,7 +79,7 @@ def get_vocab():
 
 
 # Create dicts to provide unique ints for each word
-def get_questions_answers_vocab_to_int():
+def get_qa_vocab_to_int():
 
     vocab = get_vocab()
 
@@ -211,7 +211,7 @@ def get_short_questions_answers():
 def get_int_questions_answers():
 
     short_questions, short_answers = get_short_questions_answers()
-    questions_vocab_to_int, answers_vocab_to_int = get_questions_answers_vocab_to_int()
+    questions_vocab_to_int, answers_vocab_to_int = get_qa_vocab_to_int()
 
     int_questions = []
     for q in short_questions:
