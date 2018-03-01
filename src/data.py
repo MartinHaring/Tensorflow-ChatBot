@@ -32,16 +32,11 @@ def clean_text(text):
     return text
 
 
-# Load data
-def get_data(filename):
+# Load all lines from a file
+def load_lines(filename):
     return open(filename,
                 encoding='utf-8',
                 errors='ignore').read().split('\n')
-
-
-# Fetch max_line_length and min_line_length
-def get_max_min_line_length():
-    return params['max_line_length'], params['min_line_length']
 
 
 # Create dicts to provide unique ints for each word and vice versa
@@ -124,7 +119,7 @@ def add_codes(codes, vocab_to_int):
 # Create a list of all of the conversations' lines' ids
 def get_convs():
 
-    conv_lines = get_data('movie_conversations.txt')
+    conv_lines = load_lines('movie_conversations.txt')
 
     convs = \
         [id_list.split(',') for id_list
@@ -136,7 +131,7 @@ def get_convs():
 # Create a dictionary to map each line's id with its text
 def get_line_dict():
 
-    lines = get_data('movie_lines.txt')
+    lines = load_lines('movie_lines.txt')
 
     line_dict = {}
     for l in lines:

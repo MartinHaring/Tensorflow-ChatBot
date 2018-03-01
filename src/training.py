@@ -40,8 +40,8 @@ lr = \
 keep_prob = \
     tf.placeholder(tf.float32, name='keep_prob')
 
-max_line_length, min_line_length = \
-    data.get_max_min_line_length()
+max_line_length = \
+    data.params['max_line_length']
 
 # Sequence length will be the max line length for each batch
 sequence_length = \
@@ -209,7 +209,7 @@ for epoch_i in range(1, epochs + 1):
             # Reduce learning rate, but not below its minimum value
             learning_rate *= learning_rate_decay
             if learning_rate < min_learning_rate:
-                learning_rate = min_line_length
+                learning_rate = min_learning_rate
 
             summary_valid_loss.append(avg_valid_loss)
             if avg_valid_loss <= min(summary_valid_loss):
