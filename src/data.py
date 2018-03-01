@@ -44,14 +44,13 @@ def reverse_dict(vocab_to_int):
     return {v_i: v for v, v_i in vocab_to_int.items()}
 
 
-# Create dicts to provide unique ints for each word and vice versa
+# Create dicts to provide unique indeces for each word and vice versa
 def get_word_dicts():
 
-    q_vocab_to_int, a_vocab_to_int = get_qa_vocab_to_int()
-    q_int_to_vocab = reverse_dict(q_vocab_to_int)
-    a_int_to_vocab = reverse_dict(a_vocab_to_int)
+    vocab_to_int = get_vocab_to_int()
+    int_to_vocab = reverse_dict(vocab_to_int)
 
-    return q_vocab_to_int, a_vocab_to_int, q_int_to_vocab, a_int_to_vocab
+    return vocab_to_int, int_to_vocab
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
@@ -66,34 +65,32 @@ def fill_vocab(vocab, short_qa):
 
     return vocab
 
-# Create dicts to provide unique ints for each word
-def get_qa_vocab_to_int():
+
+# Fill a dict that maps words with indeces, ignore rare words
+def fill_vocab_to_int(vocab, threshold):
+    #----
+    return {}
+
+
+# Create dicts to provide unique indeces for common words; also add unique tokens
+def get_vocab_to_int():
 
     short_q, short_a = get_short_qa()
-
     vocab = fill_vocab({}, short_q + short_a)
-
-    questions_vocab_to_int = {}
-    answers_vocab_to_int = {}
-
+    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
     threshold = params['threshold']
+
+    vocab_to_int = {}
 
     word_id = 0
     for word, frequency in vocab.items():
         if frequency >= threshold:
-            questions_vocab_to_int[word] = word_id
-            answers_vocab_to_int[word] = word_id
+            vocab_to_int[word] = word_id
             word_id += 1
 
-    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
+    vocab_to_int = add_codes(codes, vocab_to_int)
 
-    questions_vocab_to_int = \
-        add_codes(codes, questions_vocab_to_int)
-
-    answers_vocab_to_int = \
-        add_codes(codes, answers_vocab_to_int)
-
-    return questions_vocab_to_int, answers_vocab_to_int
+    return vocab_to_int
 
 
 # Add unique elements to vocabs
@@ -200,26 +197,26 @@ def get_short_qa():
 def get_int_questions_answers():
 
     short_questions, short_answers = get_short_qa()
-    questions_vocab_to_int, answers_vocab_to_int = get_qa_vocab_to_int()
+    vocab_to_int = get_vocab_to_int()
 
     int_questions = []
     for q in short_questions:
         ints = []
         for word in q.split():
-            if word not in questions_vocab_to_int:
-                ints.append(questions_vocab_to_int['<UNK>'])
+            if word not in vocab_to_int:
+                ints.append(vocab_to_int['<UNK>'])
             else:
-                ints.append(questions_vocab_to_int[word])
+                ints.append(vocab_to_int[word])
         int_questions.append(ints)
 
     int_answers = []
     for a in short_answers:
         ints = []
         for word in a.split():
-            if word not in answers_vocab_to_int:
-                ints.append(answers_vocab_to_int['<UNK>'])
+            if word not in vocab_to_int:
+                ints.append(vocab_to_int['<UNK>'])
             else:
-                ints.append(answers_vocab_to_int[word])
+                ints.append(vocab_to_int[word])
         int_answers.append(ints)
 
     return int_questions, int_answers

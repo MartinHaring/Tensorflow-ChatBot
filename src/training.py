@@ -51,7 +51,7 @@ sequence_length = \
 input_shape = \
     tf.shape(input_data)
 
-questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab = \
+vocab_to_int, int_to_vocab = \
     data.get_word_dicts()
 
 sorted_questions, sorted_answers = \
@@ -64,13 +64,13 @@ train_logits, inference_logits = \
                   keep_prob,
                   batch_size,
                   sequence_length,
-                  len(answers_vocab_to_int),
-                  len(questions_vocab_to_int),
+                  len(vocab_to_int),
+                  len(vocab_to_int),
                   encoding_embedding_size,
                   decoding_embedding_size,
                   rnn_size,
                   num_layers,
-                  questions_vocab_to_int)
+                  vocab_to_int)
 
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
@@ -114,8 +114,8 @@ def batch_data(questions, answers, batch_size):
         start_i = batch_i * batch_size
         questions_batch = answers[start_i:start_i + batch_size]
         answers_batch = answers[start_i:start_i + batch_size]
-        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, questions_vocab_to_int))
-        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, answers_vocab_to_int))
+        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vocab_to_int))
+        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
         yield pad_questions_batch, pad_answers_batch
 
 
@@ -245,11 +245,11 @@ input_question = 'How are you?'
 
 # Prepare question
 input_question = \
-    question_to_seq(input_question, questions_vocab_to_int)
+    question_to_seq(input_question, vocab_to_int)
 
 # Pad the question until it equals the max line length
 input_question = \
-    input_question + [questions_vocab_to_int['<PAD>']] * (max_line_length - len(input_question))
+    input_question + [vocab_to_int['<PAD>']] * (max_line_length - len(input_question))
 
 # Add empty questions so input data is correct shape
 batch_shell = \
@@ -262,13 +262,13 @@ answer_logits = \
               keep_prob: 1.0})[0]
 
 # Remove padding from Question and Answer
-pad_q = questions_vocab_to_int['<PAD>']
-pad_a = answers_vocab_to_int['<PAD>']
+pad_q = vocab_to_int['<PAD>']
+pad_a = vocab_to_int['<PAD>']
 
 print('Question')
 print('  Word Ids:       {}'.format([i for i in input_question if i != pad_q]))
-print('  Input Words:    {}'.format([questions_int_to_vocab[i] for i in input_question if i != pad_q]))
+print('  Input Words:    {}'.format([int_to_vocab[i] for i in input_question if i != pad_q]))
 
 print('\nAnswer')
 print('  Word Ids:       {}'.format([i for i in np.argmax(answer_logits, 1) if i != pad_a]))
-print('  Response Words: {}'.format([answers_int_to_vocab[i] for i in np.argmax(answer_logits, 1) if i != pad_a]))
+print('  Response Words: {}'.format([int_to_vocab[i] for i in np.argmax(answer_logits, 1) if i != pad_a]))
