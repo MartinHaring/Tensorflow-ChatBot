@@ -55,7 +55,7 @@ def get_word_dicts():
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
-def fill_vocab(short_qa, vocab={}):
+def fill_vocab(vocab, short_qa):
 
     for qa in short_qa:
         for word in qa.split():
@@ -72,7 +72,7 @@ def get_qa_vocab_to_int():
 
     short_q, short_a = get_short_qa()
 
-    vocab = fill_vocab(short_q + short_a)
+    vocab = fill_vocab({}, short_q + short_a)
 
     questions_vocab_to_int = {}
     answers_vocab_to_int = {}
