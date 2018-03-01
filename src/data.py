@@ -182,7 +182,7 @@ def get_short_qa():
 
 
 # Convert the text to ints and replace rare words with <UNK>
-def get_int_questions_answers():
+def get_int_qa():
 
     short_questions, short_answers = get_short_qa()
     vocab_to_int = get_vocab_to_int()
@@ -211,11 +211,11 @@ def get_int_questions_answers():
 
 
 # Fetch sorted_questions & sorted_answers
-def get_sorted_questions_answers():
+def get_sorted_qa():
 
     max_line_length = params['max_line_length']
 
-    int_questions, int_answers = get_int_questions_answers()
+    int_questions, int_answers = get_int_qa()
 
     sorted_questions = []
     sorted_answers = []

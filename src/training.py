@@ -55,7 +55,7 @@ vocab_to_int, int_to_vocab = \
     data.get_word_dicts()
 
 sorted_questions, sorted_answers = \
-    data.get_sorted_questions_answers()
+    data.get_sorted_qa()
 
 # Create training and inference logits
 train_logits, inference_logits = \
