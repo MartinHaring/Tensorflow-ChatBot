@@ -7,8 +7,8 @@ params = {'max_line_length': 20,
 
 # Remove unnecessary characters and alter word formats
 def clean_text(text):
-    text = text.lower()
 
+    text = text.lower()
     text = re.sub(r"i'm", 'i am', text)
     text = re.sub(r"he's", 'he is', text)
     text = re.sub(r"she's", 'she is', text)
@@ -39,17 +39,17 @@ def load_lines(filename):
                 errors='ignore').read().split('\n')
 
 
+# Switch places of keys and values of a dict
+def reverse_dict(vocab_to_int):
+    return {v_i: v for v, v_i in vocab_to_int.items()}
+
+
 # Create dicts to provide unique ints for each word and vice versa
 def get_word_dicts():
 
-    q_vocab_to_int, a_vocab_to_int = \
-        get_qa_vocab_to_int()
-
-    q_int_to_vocab = \
-        {v_i: v for v, v_i in q_vocab_to_int.items()}
-
-    a_int_to_vocab = \
-        {v_i: v for v, v_i in a_vocab_to_int.items()}
+    q_vocab_to_int, a_vocab_to_int = get_qa_vocab_to_int()
+    q_int_to_vocab = reverse_dict(q_vocab_to_int)
+    a_int_to_vocab = reverse_dict(a_vocab_to_int)
 
     return q_vocab_to_int, a_vocab_to_int, q_int_to_vocab, a_int_to_vocab
 
@@ -65,7 +65,6 @@ def fill_vocab(vocab, short_qa):
                 vocab[word] += 1
 
     return vocab
-
 
 # Create dicts to provide unique ints for each word
 def get_qa_vocab_to_int():
