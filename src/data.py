@@ -153,7 +153,7 @@ def get_short_qa():
 
     i = 0
     for q in clean_questions:
-        if len(q.split()) >= min_line_length and len(q.split()) <= max_line_length:
+        if len(q.split()) >= min_line_length & len(q.split()) <= max_line_length:
             short_questions_temp.append(q)
             short_answers_temp.append(clean_answers[i])
         i += 1
@@ -163,7 +163,7 @@ def get_short_qa():
 
     i = 0
     for a in short_answers_temp:
-        if len(a.split()) >= min_line_length and len(a.split()) <= max_line_length:
+        if len(a.split()) >= min_line_length & len(a.split()) <= max_line_length:
             short_answers.append(a)
             short_questions.append(short_questions_temp[i])
         i += 1
