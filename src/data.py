@@ -39,20 +39,6 @@ def load_lines(filename):
                 errors='ignore').read().split('\n')
 
 
-# Switch places of keys and values of a dict
-def reverse_dict(vocab_to_int):
-    return {v_i: v for v, v_i in vocab_to_int.items()}
-
-
-# Create dicts to provide unique indeces for each word and vice versa
-def get_word_dicts():
-
-    vocab_to_int = get_vocab_to_int()
-    int_to_vocab = reverse_dict(vocab_to_int)
-
-    return vocab_to_int, int_to_vocab
-
-
 # Create a vocabulary, containing the frequency of each word of a given list
 def fill_vocab(vocab, short_qa):
 
@@ -75,10 +61,19 @@ def fill_vocab_to_int(vocab_to_int, vocab, threshold):
             vocab_to_int[word] = word_id
             word_id += 1
 
-    return {}
+    return vocab_to_int
 
 
-# Create dicts to provide unique indeces for common words; also add unique tokens
+# Add unique elements to vocabs
+def add_codes(codes, vocab_to_int):
+
+    for c in codes:
+        vocab_to_int[c] = len(vocab_to_int) + 1
+
+    return vocab_to_int
+
+
+# Create dicts to provide unique indeces for common words; also add unique elements
 def get_vocab_to_int():
 
     short_q, short_a = get_short_qa()
@@ -92,13 +87,18 @@ def get_vocab_to_int():
     return vocab_to_int
 
 
-# Add unique elements to vocabs
-def add_codes(codes, vocab_to_int):
+# Switch places of keys and values of a dict
+def reverse_dict(vocab_to_int):
+    return {v_i: v for v, v_i in vocab_to_int.items()}
 
-    for c in codes:
-        vocab_to_int[c] = len(vocab_to_int) + 1
 
-    return vocab_to_int
+# Create dicts to provide unique indeces for each word and vice versa
+def get_word_dicts():
+
+    vocab_to_int = get_vocab_to_int()
+    int_to_vocab = reverse_dict(vocab_to_int)
+
+    return vocab_to_int, int_to_vocab
 
 
 # Create a list of all of the conversations' lines' ids
@@ -128,7 +128,7 @@ def get_line_dict():
 
 
 # Sort the sentences into questions (inputs) and answers (targets)
-def get_questions_answers():
+def get_qa():
 
     convs = get_convs()
     line_dict = get_line_dict()
@@ -147,7 +147,7 @@ def get_questions_answers():
 def get_clean_questions_answers():
 
     questions, answers = \
-        get_questions_answers()
+        get_qa()
 
     clean_questions = \
         [clean_text(q) for q in questions]
