@@ -54,22 +54,11 @@ def get_word_dicts():
     return q_vocab_to_int, a_vocab_to_int, q_int_to_vocab, a_int_to_vocab
 
 
-# Create a dictionary for the frequency of the vocabulary
-def get_vocab():
+# Create a vocabulary, containing the frequency of each word of a given list
+def fill_vocab(short_qa, vocab={}):
 
-    short_questions, short_answers = \
-        get_short_questions_answers()
-
-    vocab = {}
-    for q in short_questions:
-        for word in q.split():
-            if word not in vocab:
-                vocab[word] = 1
-            else:
-                vocab[word] += 1
-
-    for a in short_answers:
-        for word in a.split():
+    for qa in short_qa:
+        for word in qa.split():
             if word not in vocab:
                 vocab[word] = 1
             else:
@@ -81,7 +70,9 @@ def get_vocab():
 # Create dicts to provide unique ints for each word
 def get_qa_vocab_to_int():
 
-    vocab = get_vocab()
+    short_q, short_a = get_short_qa()
+
+    vocab = fill_vocab(short_q + short_a)
 
     questions_vocab_to_int = {}
     answers_vocab_to_int = {}
@@ -94,7 +85,6 @@ def get_qa_vocab_to_int():
             questions_vocab_to_int[word] = word_id
             answers_vocab_to_int[word] = word_id
             word_id += 1
-
 
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
 
@@ -174,7 +164,7 @@ def get_clean_questions_answers():
 
 
 # Filter out questions with inappropriate lengths. Also, add the EOS element to every answer
-def get_short_questions_answers():
+def get_short_qa():
 
     clean_questions, clean_answers = get_clean_questions_answers()
 
@@ -210,7 +200,7 @@ def get_short_questions_answers():
 # Convert the text to ints and replace rare words with <UNK>
 def get_int_questions_answers():
 
-    short_questions, short_answers = get_short_questions_answers()
+    short_questions, short_answers = get_short_qa()
     questions_vocab_to_int, answers_vocab_to_int = get_qa_vocab_to_int()
 
     int_questions = []
