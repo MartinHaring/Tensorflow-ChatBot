@@ -42,16 +42,16 @@ def load_lines(filename):
 # Create dicts to provide unique ints for each word and vice versa
 def get_word_dicts():
 
-    questions_vocab_to_int, answers_vocab_to_int = \
+    q_vocab_to_int, a_vocab_to_int = \
         get_questions_answers_vocab_to_int()
 
-    questions_int_to_vocab = \
-        {v_i: v for v, v_i in questions_vocab_to_int.items()}
+    q_int_to_vocab = \
+        {v_i: v for v, v_i in q_vocab_to_int.items()}
 
-    answers_int_to_vocab = \
-        {v_i: v for v, v_i in answers_vocab_to_int.items()}
+    a_int_to_vocab = \
+        {v_i: v for v, v_i in a_vocab_to_int.items()}
 
-    return questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab
+    return q_vocab_to_int, a_vocab_to_int, q_int_to_vocab, a_int_to_vocab
 
 
 # Create a dictionary for the frequency of the vocabulary
