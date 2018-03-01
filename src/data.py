@@ -137,6 +137,22 @@ def clean_text(text):
     return text
 
 
+# Fill question and answer lists with sentences that have appropriate lengths
+def fill_short_qa(short_q, short_a, clean_q, clean_a):
+
+    min_length = params['min_line_length']
+    max_length = params['max_line_length']
+
+    i = 0
+    for sent in clean_q:
+        if len(sent.split()) >= min_length & len(sent.split()) <= max_length:
+            short_q.append(sent)
+            short_a.append(clean_a[i])
+        i += 1
+
+    return short_q, short_a
+
+
 # Format questions and answers appropriately. Also, add the EOS element to every answer
 def get_short_qa():
 
@@ -145,31 +161,17 @@ def get_short_qa():
     clean_questions = [clean_text(q) for q in questions]
     clean_answers = [clean_text(a) for a in answers]
 
-    min_line_length = params['min_line_length']
-    max_line_length = params['max_line_length']
+    short_questions_temp, short_answers_temp = \
+        fill_short_qa([], [],
+                      clean_questions,
+                      clean_answers)
 
-    short_questions_temp = []
-    short_answers_temp = []
+    short_answers, short_questions = \
+        fill_short_qa([], [],
+                      short_answers_temp,
+                      short_questions_temp)
 
-    i = 0
-    for q in clean_questions:
-        if len(q.split()) >= min_line_length & len(q.split()) <= max_line_length:
-            short_questions_temp.append(q)
-            short_answers_temp.append(clean_answers[i])
-        i += 1
-
-    short_questions = []
-    short_answers = []
-
-    i = 0
-    for a in short_answers_temp:
-        if len(a.split()) >= min_line_length & len(a.split()) <= max_line_length:
-            short_answers.append(a)
-            short_questions.append(short_questions_temp[i])
-        i += 1
-
-    short_answers = \
-        [a + ' <EOS>' for a in short_answers]
+    short_answers = [a + ' <EOS>' for a in short_answers]
 
     return short_questions, short_answers
 
