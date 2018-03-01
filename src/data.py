@@ -40,7 +40,7 @@ def load_lines(filename):
 
 
 # Create dicts to provide unique ints for each word and vice versa
-def get_all_vocabs():
+def get_word_dicts():
 
     questions_vocab_to_int, answers_vocab_to_int = \
         get_questions_answers_vocab_to_int()

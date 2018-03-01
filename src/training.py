@@ -52,7 +52,7 @@ input_shape = \
     tf.shape(input_data)
 
 questions_vocab_to_int, answers_vocab_to_int, questions_int_to_vocab, answers_int_to_vocab = \
-    data.get_all_vocabs()
+    data.get_word_dicts()
 
 sorted_questions, sorted_answers = \
     data.get_sorted_questions_answers()
