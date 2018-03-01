@@ -67,8 +67,14 @@ def fill_vocab(vocab, short_qa):
 
 
 # Fill a dict that maps words with indeces, ignore rare words
-def fill_vocab_to_int(vocab, threshold):
-    #----
+def fill_vocab_to_int(vocab_to_int, vocab, threshold):
+
+    word_id = 0
+    for word, frequency in vocab.items():
+        if frequency >= threshold:
+            vocab_to_int[word] = word_id
+            word_id += 1
+
     return {}
 
 
@@ -80,14 +86,7 @@ def get_vocab_to_int():
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
     threshold = params['threshold']
 
-    vocab_to_int = {}
-
-    word_id = 0
-    for word, frequency in vocab.items():
-        if frequency >= threshold:
-            vocab_to_int[word] = word_id
-            word_id += 1
-
+    vocab_to_int = fill_vocab_to_int({}, vocab, threshold)
     vocab_to_int = add_codes(codes, vocab_to_int)
 
     return vocab_to_int
