@@ -191,9 +191,9 @@ validation_check = \
 print('Start session...')
 sess.run(tf.global_variables_initializer())
 
-if tf.train.checkpoint_exists(checkpoint):
-    saver = tf.train.import_meta_graph(checkpoint + '.meta')
-    saver.restore(sess, checkpoint)
+if tf.train.checkpoint_exists(tparams['checkpoint']):
+    saver = tf.train.import_meta_graph(tparams['checkpoint'] + '.meta')
+    saver.restore(sess, tparams['checkpoint'])
 else:
     saver = tf.train.Saver()
 
@@ -213,13 +213,13 @@ for epoch_i in range(1, hparams['epochs'] + 1):
         end_time = time.time()
         batch_time = end_time - start_time
 
-        if batch_i % display_step == 0:
+        if batch_i % tparams['display_step'] == 0:
             print('Epoch {:>3}/{} Batch {:>4}/{} - Loss: {:>6.3f}, Seconds: {:>4.2f}'.format(epoch_i,
                                                                                              hparams['epochs'],
                                                                                              batch_i,
                                                                                              len(train_questions) // hparams['batch_size'],
-                                                                                             total_train_loss / display_step,
-                                                                                             batch_time * display_step))
+                                                                                             total_train_loss / tparams['display_step'],
+                                                                                             batch_time * tparams['display_step']))
             total_train_loss = 0
 
         if batch_i % validation_check == 0 and batch_i > 0:
@@ -252,15 +252,15 @@ for epoch_i in range(1, hparams['epochs'] + 1):
             if avg_valid_loss <= min(summary_valid_loss):
                 print('New Record!')
                 stop_early = 0
-                saver.save(sess, checkpoint)
+                saver.save(sess, tparams['checkpoint'])
 
             else:
                 print('No Improvement.')
                 stop_early += 1
-                if stop_early == stop:
+                if stop_early == tparams['stop']:
                     break
 
-    if stop_early == stop:
+    if stop_early == tparams['stop']:
         print('Stopping Training.')
         break
 
