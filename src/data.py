@@ -176,6 +176,7 @@ def get_short_qa():
     return short_questions, short_answers
 
 
+# Convert the text to ints and replace rare words with <UNK>
 def fill_ints(sent, vocab_to_int):
     return [vocab_to_int['<UNK>']
             if word not in vocab_to_int
@@ -183,7 +184,7 @@ def fill_ints(sent, vocab_to_int):
             for word in sent.split()]
 
 
-# Convert the text to ints and replace rare words with <UNK>
+# Create lists of sentences, where words are replaced with their indeces
 def get_int_qa():
 
     short_q, short_a = get_short_qa()
@@ -195,20 +196,22 @@ def get_int_qa():
     return int_q, int_a
 
 
-# Fetch sorted_questions & sorted_answers
+# Sort a list of indeces lists on a given basis
+def sort_ints(ints, max_length, basis):
+    return [ints[i[0]]
+            for length in range(1, max_length+1)
+            for i in enumerate(basis)
+            if len(i[1]) == length]
+
+
+# Sort questions and answers
 def get_sorted_qa():
 
     max_line_length = params['max_line_length']
 
-    int_questions, int_answers = get_int_qa()
+    int_q, int_a = get_int_qa()
 
-    sorted_questions = []
-    sorted_answers = []
+    sorted_q = sort_ints(int_q, max_line_length, int_q)
+    sorted_a = sort_ints(int_a, max_line_length, int_q)
 
-    for length in range(1, max_line_length+1):
-        for i in enumerate(int_questions):
-            if len(i[1]) == length:
-                sorted_questions.append(int_questions[i[0]])
-                sorted_answers.append(int_answers[i[0]])
-
-    return sorted_questions, sorted_answers
+    return sorted_q, sorted_a
