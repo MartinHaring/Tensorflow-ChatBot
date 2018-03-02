@@ -64,13 +64,13 @@ train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
                   targets,
                   keep_prob,
-                  batch_size,
+                  hparams['batch_size'],
                   sequence_length,
                   len(vocab_to_int),
-                  encoding_embedding_size,
-                  decoding_embedding_size,
-                  rnn_size,
-                  num_layers,
+                  hparams['encoding_embedding_size'],
+                  hparams['decoding_embedding_size'],
+                  hparams['rnn_size'],
+                  hparams['num_layers'],
                   vocab_to_int)
 
 # Create a tensor for inference logits, needed for loading checkpoints
@@ -86,7 +86,7 @@ with tf.name_scope('optimization'):
 
     # Optimizer
     optimizer = \
-        tf.train.AdamOptimizer(learning_rate)
+        tf.train.AdamOptimizer(hparams['learning_rate'])
 
     # Gradient Clipping
     gradients = \
@@ -146,7 +146,7 @@ stop_early = 0
 # If validation loss does decrease in 5 consectutive checks, stop training
 stop = 5
 # Modulus for checking validation loss
-validation_check = ((len(train_questions))//batch_size//2) - 1
+validation_check = ((len(train_questions))//hparams['batch_size']//2) - 1
 # Record training loss for each display step
 total_train_loss = 0
 # Record validation loss for saving improvements in the model
@@ -162,17 +162,17 @@ if tf.train.checkpoint_exists(checkpoint):
 else:
     saver = tf.train.Saver()
 
-for epoch_i in range(1, epochs + 1):
-    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, batch_size)):
+for epoch_i in range(1, hparams['epochs'] + 1):
+    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'])):
         start_time = time.time()
 
         _, loss = \
             sess.run([train_op, cost],
                      {input_data: questions_batch,
                       targets: answers_batch,
-                      lr: learning_rate,
+                      lr: hparams['learning_rate'],
                       sequence_length: answers_batch.shape[1],
-                      keep_prob: keep_probability})
+                      keep_prob: hparams['keep_probability']})
 
         total_train_loss += loss
         end_time = time.time()
@@ -180,9 +180,9 @@ for epoch_i in range(1, epochs + 1):
 
         if batch_i % display_step == 0:
             print('Epoch {:>3}/{} Batch {:>4}/{} - Loss: {:>6.3f}, Seconds: {:>4.2f}'.format(epoch_i,
-                                                                                             epochs,
+                                                                                             hparams['epochs'],
                                                                                              batch_i,
-                                                                                             len(train_questions) // batch_size,
+                                                                                             len(train_questions) // hparams['batch_size'],
                                                                                              total_train_loss / display_step,
                                                                                              batch_time * display_step))
             total_train_loss = 0
@@ -191,26 +191,27 @@ for epoch_i in range(1, epochs + 1):
             total_valid_loss = 0
             start_time = time.time()
 
-            for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, batch_size)):
+            for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, hparams['batch_size'])):
                 valid_loss = \
                     sess.run(cost,
                              {input_data: questions_batch,
                               targets: answers_batch,
-                              lr: learning_rate,
+                              lr: hparams['learning_rate'],
                               sequence_length: answers_batch.shape[1],
                               keep_prob: 1})
                 total_valid_loss += valid_loss
 
             end_time = time.time()
             batch_time = end_time - start_time
-            avg_valid_loss = total_valid_loss / (len(valid_questions) / batch_size)
+            avg_valid_loss = total_valid_loss / (len(valid_questions) / hparams['batch_size'])
 
             print('Valid Loss: {:>6.3f}, Seconds: {:>5.2f}, Time: {}'.format(avg_valid_loss, batch_time, str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
-            learning_rate *= learning_rate_decay
-            if learning_rate < min_learning_rate:
-                learning_rate = min_learning_rate
+            # not sure about the lr here
+            hparams['learning_rate'] *= hparams['learning_rate_decay']
+            if hparams['learning_rate'] < hparams['min_learning_rate']:
+                hparams['learning_rate'] = hparams['min_learning_rate']
 
             summary_valid_loss.append(avg_valid_loss)
             if avg_valid_loss <= min(summary_valid_loss):
@@ -254,7 +255,7 @@ input_question = \
 
 # Add empty questions so input data is correct shape
 batch_shell = \
-    np.zeros((batch_size, max_line_length))
+    np.zeros((hparams['batch_size'], max_line_length))
 
 # Set first question to be out input question
 answer_logits = \
