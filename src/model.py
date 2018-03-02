@@ -160,12 +160,13 @@ def decoding_layer(dec_embed_input,
             tf.zeros_initializer()
 
         output_fn = \
-            lambda x: tf.contrib.layers.fully_connected(x,
-                                                        vocab_size,
-                                                        None,
-                                                        scope=decoding_scope,
-                                                        weights_initializer=weights,
-                                                        biases_initializer=biases)
+            lambda x: \
+                tf.contrib.layers.fully_connected(x,
+                                                  vocab_size,
+                                                  None,
+                                                  scope=decoding_scope,
+                                                  weights_initializer=weights,
+                                                  biases_initializer=biases)
 
         train_logits = \
             decoding_layer_train(encoder_state,
@@ -200,8 +201,7 @@ def seq2seq_model(input_data,
                   keep_prob,
                   batch_size,
                   sequence_length,
-                  answers_vocab_size,
-                  questions_vocab_size,
+                  vocab_size,
                   enc_embedding_size,
                   dec_embedding_size,
                   rnn_size, num_layers,
@@ -209,7 +209,7 @@ def seq2seq_model(input_data,
 
     enc_embed_input = \
         tf.contrib.layers.embed_sequence(input_data,
-                                         answers_vocab_size + 1,
+                                         vocab_size + 1,
                                          enc_embedding_size,
                                          initializer=tf.random_uniform_initializer(0, 1))
 
@@ -226,7 +226,7 @@ def seq2seq_model(input_data,
                                batch_size)
 
     dec_embeddings = \
-        tf.Variable(tf.random_uniform([questions_vocab_size + 1,
+        tf.Variable(tf.random_uniform([vocab_size + 1,
                                        dec_embedding_size], 0, 1))
 
     dec_embed_input = \
@@ -237,7 +237,7 @@ def seq2seq_model(input_data,
         decoding_layer(dec_embed_input,
                        dec_embeddings,
                        enc_state,
-                       questions_vocab_size,
+                       vocab_size,
                        sequence_length,
                        rnn_size,
                        num_layers,

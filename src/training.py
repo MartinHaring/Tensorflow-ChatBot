@@ -65,7 +65,6 @@ train_logits, inference_logits = \
                   batch_size,
                   sequence_length,
                   len(vocab_to_int),
-                  len(vocab_to_int),
                   encoding_embedding_size,
                   decoding_embedding_size,
                   rnn_size,
