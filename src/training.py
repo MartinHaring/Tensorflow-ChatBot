@@ -6,6 +6,10 @@ from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
 
+
+# ---------- Preparations ----------
+
+print('Training preparation started @ {}'.format(str(datetime.now())))
 print('Set hyperparameters...')
 hparams = {
     'epochs': 5,
@@ -80,7 +84,7 @@ train_logits, inference_logits = \
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
 
-
+print('Optimize RNN...')
 with tf.name_scope('optimization'):
 
     # Loss function
@@ -104,7 +108,13 @@ with tf.name_scope('optimization'):
         optimizer.apply_gradients(capped_gradients)
 
 
-# Add Padding to each sentence in the batch
+print('Training preparation finished @ {}'.format(str(datetime.now())))
+
+
+# ---------- Training ----------
+
+
+# Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
 def pad_sentence_batch(sentence_batch, vocab_to_int):
 
     max_sentence = \
