@@ -62,6 +62,7 @@ vocab_to_int, int_to_vocab = data.get_word_dicts()
 print('Initialize training set...')
 sorted_questions, sorted_answers = data.get_sorted_qa()
 
+print('Initialize model...')
 # Create training and inference logits
 train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
@@ -78,6 +79,7 @@ train_logits, inference_logits = \
 
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
+
 
 with tf.name_scope('optimization'):
 
