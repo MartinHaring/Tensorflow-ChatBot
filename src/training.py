@@ -108,7 +108,26 @@ with tf.name_scope('optimization'):
         optimizer.apply_gradients(capped_gradients)
 
 
-print('Training preparation finished @ {}'.format(str(datetime.now())))
+print('Split training set into training and validating data...')
+# Validate the training with 10% of the data
+train_valid_split = \
+    int(len(sorted_questions)*0.1)
+
+# Split questions and answers into training and validating data
+train_questions = \
+    sorted_questions[train_valid_split:]
+
+train_answers = \
+    sorted_answers[train_valid_split:]
+
+valid_questions = \
+    sorted_questions[:train_valid_split]
+
+valid_answers = \
+    sorted_answers[:train_valid_split]
+
+
+print('Training preparation finished @ {}\n'.format(str(datetime.now())))
 
 
 # ---------- Training ----------
@@ -134,26 +153,6 @@ def batch_data(questions, answers, batch_size):
         pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
         yield pad_questions_batch, pad_answers_batch
 
-
-# Validate the training with 10% of the data
-train_valid_split = \
-    int(len(sorted_questions)*0.1)
-
-# Split questions and answers into training and validating data
-train_questions = \
-    sorted_questions[train_valid_split:]
-
-train_answers = \
-    sorted_answers[train_valid_split:]
-
-valid_questions = \
-    sorted_questions[:train_valid_split]
-
-valid_answers = \
-    sorted_answers[:train_valid_split]
-
-
-# ----------------------------------------- Training -------------------
 
 # Check training loss every 100 batches
 display_step = 100
