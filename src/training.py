@@ -6,9 +6,7 @@ from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
 
-# Set Hyperparameters
-print('Set Hyperparameters')
-
+print('Set hyperparameters...')
 hparams = {
     'epochs': 5,
     'batch_size': 64,
@@ -22,42 +20,47 @@ hparams = {
     'keep_probability': 0.8
 }
 
+print('Start session...')
 # Reset the graph to ensure that it is ready for training
 tf.reset_default_graph()
-
-# Start session
 sess = tf.Session()
 
-# Create placeholders for inputs to the model
-# these are initially empty
+print('Initialize placeholders...')
+# Create placeholders for inputs to the model, which are initially empty
 input_data = \
-    tf.placeholder(tf.int32, [None, None], name='input')
+    tf.placeholder(tf.int32,
+                   [None, None],
+                   name='input')
 
 targets = \
-    tf.placeholder(tf.int32, [None, None], name='targets')
+    tf.placeholder(tf.int32,
+                   [None, None],
+                   name='targets')
 
 lr = \
-    tf.placeholder(tf.float32, name='learning_rate')
+    tf.placeholder(tf.float32,
+                   name='learning_rate')
 
 keep_prob = \
-    tf.placeholder(tf.float32, name='keep_prob')
+    tf.placeholder(tf.float32,
+                   name='keep_prob')
 
-max_line_length = \
-    data.params['max_line_length']
+max_line_length = data.params['max_line_length']
 
 # Sequence length will be the max line length for each batch
 sequence_length = \
-    tf.placeholder_with_default(max_line_length, None, name='sequence_length')
+    tf.placeholder_with_default(max_line_length,
+                                None,
+                                name='sequence_length')
 
 # Find the shape of the input data for sequence_loss
-input_shape = \
-    tf.shape(input_data)
+input_shape = tf.shape(input_data)
 
-vocab_to_int, int_to_vocab = \
-    data.get_word_dicts()
+print('Initialize vocabulary...')
+vocab_to_int, int_to_vocab = data.get_word_dicts()
 
-sorted_questions, sorted_answers = \
-    data.get_sorted_qa()
+print('Initialize training set...')
+sorted_questions, sorted_answers = data.get_sorted_qa()
 
 # Create training and inference logits
 train_logits, inference_logits = \

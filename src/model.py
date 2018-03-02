@@ -161,12 +161,12 @@ def decoding_layer(dec_embed_input,
 
         output_fn = \
             lambda x: \
-                tf.contrib.layers.fully_connected(x,
-                                                  vocab_size,
-                                                  None,
-                                                  scope=decoding_scope,
-                                                  weights_initializer=weights,
-                                                  biases_initializer=biases)
+            tf.contrib.layers.fully_connected(x,
+                                              vocab_size,
+                                              None,
+                                              scope=decoding_scope,
+                                              weights_initializer=weights,
+                                              biases_initializer=biases)
 
         train_logits = \
             decoding_layer_train(encoder_state,
