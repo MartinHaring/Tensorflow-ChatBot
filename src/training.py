@@ -8,7 +8,6 @@ from model import seq2seq_model
 
 
 # ---------- Preparations ----------
-
 print('Training preparation started @ {}'.format(str(datetime.now())))
 print('Set hyperparameters...')
 hparams = {
@@ -24,10 +23,12 @@ hparams = {
     'keep_probability': 0.8
 }
 
+
 print('Start session...')
 # Reset the graph to ensure that it is ready for training
 tf.reset_default_graph()
 sess = tf.Session()
+
 
 print('Initialize placeholders...')
 # Create placeholders for inputs to the model, which are initially empty
@@ -60,11 +61,14 @@ sequence_length = \
 # Find the shape of the input data for sequence_loss
 input_shape = tf.shape(input_data)
 
+
 print('Initialize vocabulary...')
 vocab_to_int, int_to_vocab = data.get_word_dicts()
 
+
 print('Initialize training set...')
 sorted_questions, sorted_answers = data.get_sorted_qa()
+
 
 print('Initialize model...')
 # Create training and inference logits
@@ -83,6 +87,7 @@ train_logits, inference_logits = \
 
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
+
 
 print('Optimize RNN...')
 with tf.name_scope('optimization'):
@@ -131,8 +136,6 @@ print('Training preparation finished @ {}\n'.format(str(datetime.now())))
 
 
 # ---------- Training ----------
-
-
 # Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
 def pad_sentence_batch(sentence_batch, vocab_to_int):
 
@@ -146,28 +149,46 @@ def pad_sentence_batch(sentence_batch, vocab_to_int):
 def batch_data(questions, answers, batch_size):
 
     for batch_i in range(0, len(questions)//batch_size):
+
         start_i = batch_i * batch_size
+
         questions_batch = answers[start_i:start_i + batch_size]
         answers_batch = answers[start_i:start_i + batch_size]
+
         pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vocab_to_int))
         pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
+
         yield pad_questions_batch, pad_answers_batch
 
 
-# Check training loss every 100 batches
-display_step = 100
-stop_early = 0
-# If validation loss does decrease in 5 consectutive checks, stop training
-stop = 5
-# Modulus for checking validation loss
-validation_check = ((len(train_questions))//hparams['batch_size']//2) - 1
+print('\nTraining started @ {}'.format(str(datetime.now())))
+print('Initialize training parameters...')
+tparams = {
+    # Check training loss every x batches
+    'display_step': 100,
+
+    # If validation loss does decrease in x consectutive checks, stop training
+    'stop': 5,
+
+    # Path to checkpoint file
+    'checkpoint': './best_model.ckpt'
+}
+
 # Record training loss for each display step
 total_train_loss = 0
+
 # Record validation loss for saving improvements in the model
 summary_valid_loss = []
 
-checkpoint = './best_model.ckpt'
+# Variable to keep track of consecutive validation losses
+stop_early = 0
 
+# Modulus for checking validation loss (check when 50% and 100% are done)
+validation_check = \
+    ((len(train_questions)) // hparams['batch_size'] // 2) - 1
+
+
+print('Start session...')
 sess.run(tf.global_variables_initializer())
 
 if tf.train.checkpoint_exists(checkpoint):
