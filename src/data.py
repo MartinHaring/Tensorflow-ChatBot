@@ -2,7 +2,7 @@ import re
 
 params = {'max_line_length': 20,
           'min_line_length': 2,
-          'threshold': 10}
+          'threshold': 20}
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
@@ -19,15 +19,15 @@ def fill_vocab(vocab, short_qa):
 
 
 # Fill a dict that maps words with indeces, ignore rare words
-def fill_vocab_to_int(vocab_to_int, vocab, threshold):
+def fill_vti(vti, vocab, threshold):
 
     word_id = 0
     for word, frequency in vocab.items():
         if frequency >= threshold:
-            vocab_to_int[word] = word_id
+            vti[word] = word_id
             word_id += 1
 
-    return vocab_to_int
+    return vti
 
 
 # Add unique elements to vocabs
@@ -44,10 +44,11 @@ def get_vocab_to_int():
 
     short_q, short_a = get_short_qa()
     vocab = fill_vocab({}, short_q + short_a)
+
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
     threshold = params['threshold']
 
-    vocab_to_int = fill_vocab_to_int({}, vocab, threshold)
+    vocab_to_int = fill_vti({}, vocab, threshold)
     vocab_to_int = add_codes(codes, vocab_to_int)
 
     return vocab_to_int
