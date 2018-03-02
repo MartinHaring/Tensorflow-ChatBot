@@ -176,33 +176,23 @@ def get_short_qa():
     return short_questions, short_answers
 
 
+def fill_ints(sent, vocab_to_int):
+    return [vocab_to_int['<UNK>']
+            if word not in vocab_to_int
+            else vocab_to_int[word]
+            for word in sent.split()]
+
+
 # Convert the text to ints and replace rare words with <UNK>
 def get_int_qa():
 
-    short_questions, short_answers = get_short_qa()
+    short_q, short_a = get_short_qa()
     vocab_to_int = get_vocab_to_int()
 
-    int_questions = []
-    for q in short_questions:
-        ints = []
-        for word in q.split():
-            if word not in vocab_to_int:
-                ints.append(vocab_to_int['<UNK>'])
-            else:
-                ints.append(vocab_to_int[word])
-        int_questions.append(ints)
+    int_q = [fill_ints(q, vocab_to_int) for q in short_q]
+    int_a = [fill_ints(a, vocab_to_int) for a in short_a]
 
-    int_answers = []
-    for a in short_answers:
-        ints = []
-        for word in a.split():
-            if word not in vocab_to_int:
-                ints.append(vocab_to_int['<UNK>'])
-            else:
-                ints.append(vocab_to_int[word])
-        int_answers.append(ints)
-
-    return int_questions, int_answers
+    return int_q, int_a
 
 
 # Fetch sorted_questions & sorted_answers
