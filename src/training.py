@@ -6,19 +6,21 @@ from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
 
-# ---------------------------------------------- MODEL --------------------------
-
 # Set Hyperparameters
-epochs = 5
-batch_size = 64
-rnn_size = 256
-num_layers = 2
-encoding_embedding_size = 256
-decoding_embedding_size = 256
-learning_rate = 0.005
-learning_rate_decay = 0.95
-min_learning_rate = 0.0001
-keep_probability = 0.8
+print('Set Hyperparameters')
+
+hparams = {
+    'epochs': 5,
+    'batch_size': 64,
+    'rnn_size': 256,
+    'num_layers': 2,
+    'encoding_embedding_size': 256,
+    'decoding_embedding_size': 256,
+    'learning_rate': 0.005,
+    'learning_rate_decay': 0.95,
+    'min_learning_rate': 0.0001,
+    'keep_probability': 0.8
+}
 
 # Reset the graph to ensure that it is ready for training
 tf.reset_default_graph()

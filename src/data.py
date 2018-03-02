@@ -1,8 +1,10 @@
 import re
 
-params = {'max_line_length': 20,
-          'min_line_length': 2,
-          'threshold': 20}
+params = {
+    'max_line_length': 20,
+    'min_line_length': 2,
+    'threshold': 20
+}
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
