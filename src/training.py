@@ -176,16 +176,16 @@ print('Training preparation finished @ {}\n'.format(str(datetime.now())))
 
 # ---------- Training ----------
 # Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
-def pad_sentence_batch(sentence_batch, vti):
+def pad_sentence_batch(sentence_batch, pad_id):
 
     max_sentence = \
         max([len(sentence) for sentence in sentence_batch])
 
-    return [sentence + [vti['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
+    return [sentence + [pad_id] * (max_sentence - len(sentence)) for sentence in sentence_batch]
 
 
 # Batch questions and answers together
-def batch_data(questions, answers, batch_size):
+def batch_data(questions, answers, batch_size, vti):
 
     for batch_i in range(0, len(questions)//batch_size):
 
@@ -194,15 +194,15 @@ def batch_data(questions, answers, batch_size):
         questions_batch = answers[start_i:start_i + batch_size]
         answers_batch = answers[start_i:start_i + batch_size]
 
-        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vocab_to_int))
-        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
+        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vti['<PAD>']))
+        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vti['<PAD>']))
 
         yield pad_questions_batch, pad_answers_batch
 
 
 print('\nTraining started @ {}'.format(str(datetime.now())))
 for epoch_i in range(1, hparams['epochs'] + 1):
-    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'])):
+    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'], vocab_to_int)):
         start_time = time.time()
 
         _, loss = \
@@ -230,7 +230,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
             total_valid_loss = 0
             start_time = time.time()
 
-            for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, hparams['batch_size'])):
+            for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, hparams['batch_size'], vocab_to_int)):
                 valid_loss = \
                     sess.run(cost,
                              {input_data: questions_batch,
