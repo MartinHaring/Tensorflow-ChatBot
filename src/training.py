@@ -131,36 +131,6 @@ valid_answers = \
     sorted_answers[:train_valid_split]
 
 
-print('Training preparation finished @ {}\n'.format(str(datetime.now())))
-
-
-# ---------- Training ----------
-# Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
-def pad_sentence_batch(sentence_batch, vocab_to_int):
-
-    max_sentence = \
-        max([len(sentence) for sentence in sentence_batch])
-
-    return [sentence + [vocab_to_int['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
-
-
-# Batch questions and answers together
-def batch_data(questions, answers, batch_size):
-
-    for batch_i in range(0, len(questions)//batch_size):
-
-        start_i = batch_i * batch_size
-
-        questions_batch = answers[start_i:start_i + batch_size]
-        answers_batch = answers[start_i:start_i + batch_size]
-
-        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vocab_to_int))
-        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
-
-        yield pad_questions_batch, pad_answers_batch
-
-
-print('\nTraining started @ {}'.format(str(datetime.now())))
 print('Initialize training parameters...')
 tparams = {
     # Check training loss every x batches
@@ -201,6 +171,36 @@ else:
     saver = tf.train.Saver()
 
 
+print('Training preparation finished @ {}\n'.format(str(datetime.now())))
+
+
+# ---------- Training ----------
+# Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
+def pad_sentence_batch(sentence_batch, vocab_to_int):
+
+    max_sentence = \
+        max([len(sentence) for sentence in sentence_batch])
+
+    return [sentence + [vocab_to_int['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
+
+
+# Batch questions and answers together
+def batch_data(questions, answers, batch_size):
+
+    for batch_i in range(0, len(questions)//batch_size):
+
+        start_i = batch_i * batch_size
+
+        questions_batch = answers[start_i:start_i + batch_size]
+        answers_batch = answers[start_i:start_i + batch_size]
+
+        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vocab_to_int))
+        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vocab_to_int))
+
+        yield pad_questions_batch, pad_answers_batch
+
+
+print('\nTraining started @ {}'.format(str(datetime.now())))
 for epoch_i in range(1, hparams['epochs'] + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'])):
         start_time = time.time()
