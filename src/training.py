@@ -263,7 +263,6 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                                                                            str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
-            # not sure about the lr here
             hparams['learning_rate'] *= hparams['learning_rate_decay']
             if hparams['learning_rate'] < hparams['min_learning_rate']:
                 hparams['learning_rate'] = hparams['min_learning_rate']
@@ -284,21 +283,19 @@ for epoch_i in range(1, hparams['epochs'] + 1):
         print('Stopping Training.')
         break
 
-# -------------------------------------- TESTING ------------------
+
+print('Training finished @ {}\n'.format(str(datetime.now())))
 
 
+# ---------- Testing ----------
 # Prepare question for the model
-def question_to_seq(question, vocab_to_int):
+def question_to_seq(question, vti):
     question = data.clean_text(question)
-    return [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in question.split()]
+    return [vti.get(word, vti['<UNK>']) for word in question.split()]
 
 
 # Create input question
 input_question = 'How are you?'
-
-# Use question from data as input
-#random = np.random.choice(len(short_questions))
-#input_question = short_questions[random]
 
 # Prepare question
 input_question = \
