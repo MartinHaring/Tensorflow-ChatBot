@@ -191,11 +191,16 @@ validation_check = \
 print('Start session...')
 sess.run(tf.global_variables_initializer())
 
+
+print('Check if Saver exists...')
 if tf.train.checkpoint_exists(tparams['checkpoint']):
+    print('Load Saver...')
     saver = tf.train.import_meta_graph(tparams['checkpoint'] + '.meta')
     saver.restore(sess, tparams['checkpoint'])
 else:
+    print('Create Saver...')
     saver = tf.train.Saver()
+
 
 for epoch_i in range(1, hparams['epochs'] + 1):
     for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'])):
