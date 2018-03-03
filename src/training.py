@@ -203,24 +203,25 @@ def batch_data(questions, answers, batch_size, pad_id):
 print('\nTraining started @ {}'.format(str(datetime.now())))
 for epoch_i in range(1, hparams['epochs'] + 1):
 
-    for batch_i, (questions_batch, answers_batch) \
+    for batch_i, (questions_batch_i, answers_batch_i) \
             in enumerate(batch_data(train_questions,
                                     train_answers,
                                     hparams['batch_size'],
                                     vocab_to_int['<PAD>'])):
+
         start_time = time.time()
 
         _, loss = \
             sess.run([train_op, cost],
-                     {input_data: questions_batch,
-                      targets: answers_batch,
-                      sequence_length: answers_batch.shape[1],
+                     {input_data: questions_batch_i,
+                      targets: answers_batch_i,
+                      sequence_length: answers_batch_i.shape[1],
                       lr: hparams['learning_rate'],
                       keep_prob: hparams['keep_probability']})
 
         total_train_loss += loss
         end_time = time.time()
-        batch_time = end_time - start_time
+        batch_time = round(end_time - start_time, 2)
 
         if batch_i % tparams['display_step'] == 0:
             print('Epoch {}/{} -+- Batch {}/{} -+- Loss: {} -+- Seconds: {}'.format(
@@ -229,7 +230,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                 batch_i,
                 len(train_questions) // hparams['batch_size'],
                 round(total_train_loss / tparams['display_step'], 4),
-                round(batch_time * tparams['display_step'], 2)
+                batch_time * tparams['display_step']
             ))
             total_train_loss = 0
 
@@ -237,21 +238,29 @@ for epoch_i in range(1, hparams['epochs'] + 1):
             total_valid_loss = 0
             start_time = time.time()
 
-            for batch_ii, (questions_batch, answers_batch) in enumerate(batch_data(valid_questions, valid_answers, hparams['batch_size'], vocab_to_int)):
+            for batch_ii, (questions_batch_ii, answers_batch_ii) \
+                    in enumerate(batch_data(valid_questions,
+                                            valid_answers,
+                                            hparams['batch_size'],
+                                            vocab_to_int)):
+
                 valid_loss = \
                     sess.run(cost,
-                             {input_data: questions_batch,
-                              targets: answers_batch,
+                             {input_data: questions_batch_ii,
+                              targets: answers_batch_ii,
+                              sequence_length: answers_batch_ii.shape[1],
                               lr: hparams['learning_rate'],
-                              sequence_length: answers_batch.shape[1],
                               keep_prob: 1})
+
                 total_valid_loss += valid_loss
 
             end_time = time.time()
-            batch_time = end_time - start_time
-            avg_valid_loss = total_valid_loss / (len(valid_questions) / hparams['batch_size'])
+            batch_time = round(end_time - start_time, 2)
+            avg_valid_loss = round(total_valid_loss / (len(valid_questions) / hparams['batch_size']), 4)
 
-            print('Valid Loss: {:>6.3f}, Seconds: {:>5.2f}, Time: {}'.format(avg_valid_loss, batch_time, str(datetime.now())))
+            print('Valid Loss: {} ----- Seconds: {} ----- Time: {}'.format(avg_valid_loss,
+                                                                           batch_time,
+                                                                           str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
             # not sure about the lr here
