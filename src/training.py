@@ -176,12 +176,12 @@ print('Training preparation finished @ {}\n'.format(str(datetime.now())))
 
 # ---------- Training ----------
 # Add Padding to each sentence in the batch (sorting sentences beforehand -> bucketing)
-def pad_sentence_batch(sentence_batch, vocab_to_int):
+def pad_sentence_batch(sentence_batch, vti):
 
     max_sentence = \
         max([len(sentence) for sentence in sentence_batch])
 
-    return [sentence + [vocab_to_int['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
+    return [sentence + [vti['<PAD>']] * (max_sentence - len(sentence)) for sentence in sentence_batch]
 
 
 # Batch questions and answers together
