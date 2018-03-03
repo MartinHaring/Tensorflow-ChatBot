@@ -185,7 +185,7 @@ def pad_sentence_batch(sentence_batch, pad_id):
 
 
 # Batch questions and answers together
-def batch_data(questions, answers, batch_size, vti):
+def batch_data(questions, answers, batch_size, pad_id):
 
     for batch_i in range(0, len(questions)//batch_size):
 
@@ -194,15 +194,15 @@ def batch_data(questions, answers, batch_size, vti):
         questions_batch = answers[start_i:start_i + batch_size]
         answers_batch = answers[start_i:start_i + batch_size]
 
-        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, vti['<PAD>']))
-        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, vti['<PAD>']))
+        pad_questions_batch = np.array(pad_sentence_batch(questions_batch, pad_id))
+        pad_answers_batch = np.array(pad_sentence_batch(answers_batch, pad_id))
 
         yield pad_questions_batch, pad_answers_batch
 
 
 print('\nTraining started @ {}'.format(str(datetime.now())))
 for epoch_i in range(1, hparams['epochs'] + 1):
-    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'], vocab_to_int)):
+    for batch_i, (questions_batch, answers_batch) in enumerate(batch_data(train_questions, train_answers, hparams['batch_size'], vocab_to_int['<PAD>'])):
         start_time = time.time()
 
         _, loss = \
