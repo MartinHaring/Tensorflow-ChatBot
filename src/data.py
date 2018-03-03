@@ -1,7 +1,7 @@
 import re
 
 params = {
-    'max_line_length': 20,
+    'max_line_length': 15,
     'min_line_length': 2,
     'threshold': 20
 }
@@ -148,7 +148,7 @@ def fill_short_qa(short_q, short_a, clean_q, clean_a):
 
     i = 0
     for sent in clean_q:
-        if len(sent.split()) >= min_length & len(sent.split()) <= max_length:
+        if len(sent.split()) >= min_length and len(sent.split()) <= max_length:
             short_q.append(sent)
             short_a.append(clean_a[i])
         i += 1
@@ -218,3 +218,32 @@ def get_sorted_qa():
     sorted_a = sort_ints(int_a, max_line_length, int_q)
 
     return sorted_q, sorted_a
+
+
+q, _ = get_qa()
+print('qestions len: {}'.format(str(len(q))))
+
+short_q, short_a = get_short_qa()
+print('\nshort len: {}'.format(str(len(short_q))))
+
+int_q, _ = get_int_qa()
+print('\nint len: {}'.format(str(len(int_q))))
+
+vocab = fill_vocab({}, short_q + short_a)
+print('\nvocab len: {}'.format(len(vocab)))
+
+vti = get_vocab_to_int()
+print('\nvti len: {}'.format(str(len(vti))))
+
+unk_id = vti['<UNK>']
+count = 0
+unk_count = 0
+for q_ids in int_q:
+    for id in q_ids:
+        if id == unk_id:
+            unk_count += 1
+        count += 1
+
+print('\nWords: {}'.format(str(count)))
+print('UNKs: {}'.format(str(unk_count)))
+print('Percentage: {}%'.format(str(unk_count / count * 100)))
