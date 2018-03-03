@@ -12,7 +12,7 @@ print('Training preparation started @ {}'.format(str(datetime.now())))
 print('Set hyperparameters...')
 hparams = {
     'epochs': 5,
-    'batch_size': 64,
+    'batch_size': 128,
     'rnn_size': 256,
     'num_layers': 2,
     'encoding_embedding_size': 256,
@@ -68,7 +68,6 @@ vocab_to_int, int_to_vocab = data.get_word_dicts()
 
 print('Initialize training set...')
 sorted_questions, sorted_answers = data.get_sorted_qa()
-
 
 print('Initialize model...')
 # Create training and inference logits
