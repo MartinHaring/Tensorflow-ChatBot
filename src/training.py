@@ -202,6 +202,7 @@ def batch_data(questions, answers, batch_size, pad_id):
 
 print('\nTraining started @ {}'.format(str(datetime.now())))
 for epoch_i in range(1, hparams['epochs'] + 1):
+
     for batch_i, (questions_batch, answers_batch) \
             in enumerate(batch_data(train_questions,
                                     train_answers,
@@ -213,8 +214,8 @@ for epoch_i in range(1, hparams['epochs'] + 1):
             sess.run([train_op, cost],
                      {input_data: questions_batch,
                       targets: answers_batch,
-                      lr: hparams['learning_rate'],
                       sequence_length: answers_batch.shape[1],
+                      lr: hparams['learning_rate'],
                       keep_prob: hparams['keep_probability']})
 
         total_train_loss += loss
@@ -222,12 +223,14 @@ for epoch_i in range(1, hparams['epochs'] + 1):
         batch_time = end_time - start_time
 
         if batch_i % tparams['display_step'] == 0:
-            print('Epoch {:>3}/{} Batch {:>4}/{} - Loss: {:>6.3f}, Seconds: {:>4.2f}'.format(epoch_i,
-                                                                                             hparams['epochs'],
-                                                                                             batch_i,
-                                                                                             len(train_questions) // hparams['batch_size'],
-                                                                                             total_train_loss / tparams['display_step'],
-                                                                                             batch_time * tparams['display_step']))
+            print('Epoch {}/{} -+- Batch {}/{} -+- Loss: {} -+- Seconds: {}'.format(
+                epoch_i,
+                hparams['epochs'],
+                batch_i,
+                len(train_questions) // hparams['batch_size'],
+                round(total_train_loss / tparams['display_step'], 4),
+                round(batch_time * tparams['display_step'], 2)
+            ))
             total_train_loss = 0
 
         if batch_i % validation_check == 0 and batch_i > 0:
