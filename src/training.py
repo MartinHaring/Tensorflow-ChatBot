@@ -1,11 +1,11 @@
 import tensorflow as tf
 import numpy as np
-import data
 import time
+import data
+import inference
 from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
-from inference import question_to_seq
 
 
 # ---------- Preparations ----------
@@ -294,7 +294,7 @@ input_question = 'How are you?'
 
 # Prepare question
 input_question = \
-    question_to_seq(input_question, vocab_to_int)
+    inference.question_to_seq(input_question, vocab_to_int)
 
 # Pad the question until it equals the max line length
 input_question = \

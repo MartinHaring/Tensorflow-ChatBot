@@ -1,8 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import data
+import training
 from model import seq2seq_model
-from training import hparams, tparams
 
 
 # Prepare question for the model
@@ -43,20 +43,20 @@ train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
                   targets,
                   keep_prob,
-                  hparams['batch_size'],
+                  training.hparams['batch_size'],
                   sequence_length,
                   len(vocab_to_int),
-                  hparams['encoding_embedding_size'],
-                  hparams['decoding_embedding_size'],
-                  hparams['rnn_size'],
-                  hparams['num_layers'],
+                  training.hparams['encoding_embedding_size'],
+                  training.hparams['decoding_embedding_size'],
+                  training.hparams['rnn_size'],
+                  training.hparams['num_layers'],
                   vocab_to_int)
 
 # Create a tensor for inference logits, needed for loading checkpoints
 tf.identity(inference_logits, 'logits')
 
-saver = tf.train.import_meta_graph(tparams['checkpoint'] + '.meta')
-saver.restore(sess, tparams['checkpoint'])
+saver = tf.train.import_meta_graph(training.tparams['checkpoint'] + '.meta')
+saver.restore(sess, training.tparams['checkpoint'])
 
 while input_question != 'quit':
     input_question = input('Enter input: ')
@@ -71,7 +71,7 @@ while input_question != 'quit':
 
     # Add empty questions so input data is correct shape
     batch_shell = \
-        np.zeros((hparams['batch_size'], max_line_length))
+        np.zeros((training.hparams['batch_size'], max_line_length))
 
     # Set first question to be out input question
     answer_logits = \
