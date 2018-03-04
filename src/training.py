@@ -5,6 +5,7 @@ import time
 from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
+from inference import question_to_seq
 
 
 # ---------- Preparations ----------
@@ -288,12 +289,6 @@ print('Training finished @ {}\n'.format(str(datetime.now())))
 
 
 # ---------- Testing ----------
-# Prepare question for the model
-def question_to_seq(question, vti):
-    question = data.clean_text(question)
-    return [vti.get(word, vti['<UNK>']) for word in question.split()]
-
-
 # Create input question
 input_question = 'How are you?'
 
