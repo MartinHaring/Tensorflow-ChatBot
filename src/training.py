@@ -242,7 +242,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                     in enumerate(batch_data(valid_questions,
                                             valid_answers,
                                             hparams['batch_size'],
-                                            vocab_to_int)):
+                                            vocab_to_int['<PAD>'])):
 
                 valid_loss = \
                     sess.run(cost,
