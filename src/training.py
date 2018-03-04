@@ -222,7 +222,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
 
         total_train_loss += loss
         end_time = time.time()
-        batch_time = round(end_time - start_time, 2)
+        batch_time = end_time - start_time
 
         if batch_i % tparams['display_step'] == 0:
             print('Epoch {}/{} -+- Batch {}/{} -+- Loss: {} -+- Seconds: {}'.format(
@@ -231,7 +231,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                 batch_i,
                 len(train_questions) // hparams['batch_size'],
                 round(total_train_loss / tparams['display_step'], 4),
-                batch_time * tparams['display_step']
+                round(batch_time * tparams['display_step'])
             ))
             total_train_loss = 0
 
@@ -256,11 +256,11 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                 total_valid_loss += valid_loss
 
             end_time = time.time()
-            batch_time = round(end_time - start_time, 2)
+            batch_time = end_time - start_time
             avg_valid_loss = round(total_valid_loss / (len(valid_questions) / hparams['batch_size']), 4)
 
             print('Valid Loss: {} ----- Seconds: {} ----- Time: {}'.format(avg_valid_loss,
-                                                                           batch_time,
+                                                                           round(batch_time),
                                                                            str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
