@@ -1,7 +1,6 @@
 import tensorflow as tf
 import numpy as np
 import data
-import training
 from datetime import datetime
 from model import seq2seq_model
 
@@ -10,7 +9,7 @@ print('Initialize Session...')
 input_question = ''
 
 vocab_to_int, int_to_vocab = data.get_word_dicts()
-max_line_length = data.params['max_line_length']
+max_line_length = data.dparams['max_line_length']
 
 tf.reset_default_graph()
 sess = tf.Session()
@@ -38,20 +37,20 @@ train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
                   targets,
                   keep_prob,
-                  training.hparams['batch_size'],
+                  data.hparams['batch_size'],
                   sequence_length,
                   len(vocab_to_int),
-                  training.hparams['encoding_embedding_size'],
-                  training.hparams['decoding_embedding_size'],
-                  training.hparams['rnn_size'],
-                  training.hparams['num_layers'],
+                  data.hparams['encoding_embedding_size'],
+                  data.hparams['decoding_embedding_size'],
+                  data.hparams['rnn_size'],
+                  data.hparams['num_layers'],
                   vocab_to_int)
 
 print('Load neural network...')
 tf.identity(inference_logits, 'logits')
 
-saver = tf.train.import_meta_graph(training.tparams['checkpoint'] + '.meta')
-saver.restore(sess, training.tparams['checkpoint'])
+saver = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
+saver.restore(sess, data.tparams['checkpoint'])
 
 
 print('Inference preparation finished @ {}\n'.format(str(datetime.now())))
@@ -70,7 +69,7 @@ while input_question != 'quit':
 
     # Add empty questions so input data is correct shape
     batch_shell = \
-        np.zeros((training.hparams['batch_size'], max_line_length))
+        np.zeros((data.hparams['batch_size'], max_line_length))
 
     # Set first question to be out input question
     answer_logits = \

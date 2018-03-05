@@ -6,25 +6,9 @@ from tensorflow.contrib.seq2seq import sequence_loss
 from datetime import datetime
 from model import seq2seq_model
 
-
 # ---------- Preparations ----------
 print('Training preparation started @ {}'.format(str(datetime.now())))
-print('Set hyperparameters...')
-hparams = {
-    'epochs': 5,
-    'batch_size': 128,
-    'rnn_size': 256,
-    'num_layers': 2,
-    'encoding_embedding_size': 256,
-    'decoding_embedding_size': 256,
-    'learning_rate': 0.005,
-    'learning_rate_decay': 0.95,
-    'min_learning_rate': 0.0001,
-    'keep_probability': 0.8
-}
-
-
-print('Start session...')
+print('Initialize session...')
 # Reset the graph to ensure that it is ready for training
 tf.reset_default_graph()
 sess = tf.Session()
@@ -50,7 +34,7 @@ keep_prob = \
     tf.placeholder(tf.float32,
                    name='keep_prob')
 
-max_line_length = data.params['max_line_length']
+max_line_length = data.dparams['max_line_length']
 
 # Sequence length will be the max line length for each batch
 sequence_length = \
@@ -75,13 +59,13 @@ train_logits, inference_logits = \
     seq2seq_model(tf.reverse(input_data, [-1]),
                   targets,
                   keep_prob,
-                  hparams['batch_size'],
+                  data.hparams['batch_size'],
                   sequence_length,
                   len(vocab_to_int),
-                  hparams['encoding_embedding_size'],
-                  hparams['decoding_embedding_size'],
-                  hparams['rnn_size'],
-                  hparams['num_layers'],
+                  data.hparams['encoding_embedding_size'],
+                  data.hparams['decoding_embedding_size'],
+                  data.hparams['rnn_size'],
+                  data.hparams['num_layers'],
                   vocab_to_int)
 
 # Create a tensor for inference logits, needed for loading checkpoints
@@ -99,7 +83,7 @@ with tf.name_scope('optimization'):
 
     # Optimizer
     optimizer = \
-        tf.train.AdamOptimizer(hparams['learning_rate'])
+        tf.train.AdamOptimizer(data.hparams['learning_rate'])
 
     # Gradient Clipping
     gradients = \
@@ -132,17 +116,6 @@ valid_answers = \
 
 
 print('Initialize training parameters...')
-tparams = {
-    # Check training loss every x batches
-    'display_step': 100,
-
-    # If validation loss does decrease in x consectutive checks, stop training
-    'stop': 5,
-
-    # Path to checkpoint file
-    'checkpoint': './best_model.ckpt'
-}
-
 # Record training loss for each display step
 total_train_loss = 0
 
@@ -154,7 +127,7 @@ stop_early = 0
 
 # Modulus for checking validation loss (check when 50% and 100% are done)
 validation_check = \
-    ((len(train_questions)) // hparams['batch_size'] // 2) - 1
+    ((len(train_questions)) // data.hparams['batch_size'] // 2) - 1
 
 
 print('Start session...')
@@ -162,10 +135,10 @@ sess.run(tf.global_variables_initializer())
 
 
 print('Check if Saver exists...')
-if tf.train.checkpoint_exists(tparams['checkpoint']):
+if tf.train.checkpoint_exists(data.tparams['checkpoint']):
     print('Load Saver...')
-    saver = tf.train.import_meta_graph(tparams['checkpoint'] + '.meta')
-    saver.restore(sess, tparams['checkpoint'])
+    saver = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
+    saver.restore(sess, data.tparams['checkpoint'])
 else:
     print('Create Saver...')
     saver = tf.train.Saver()
@@ -201,12 +174,12 @@ def batch_data(questions, answers, batch_size, pad_id):
 
 
 print('\nTraining started @ {}'.format(str(datetime.now())))
-for epoch_i in range(1, hparams['epochs'] + 1):
+for epoch_i in range(1, data.hparams['epochs'] + 1):
 
     for batch_i, (questions_batch_i, answers_batch_i) \
             in enumerate(batch_data(train_questions,
                                     train_answers,
-                                    hparams['batch_size'],
+                                    data.hparams['batch_size'],
                                     vocab_to_int['<PAD>'])):
 
         start_time = time.time()
@@ -216,21 +189,21 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                      {input_data: questions_batch_i,
                       targets: answers_batch_i,
                       sequence_length: answers_batch_i.shape[1],
-                      lr: hparams['learning_rate'],
-                      keep_prob: hparams['keep_probability']})
+                      lr: data.hparams['learning_rate'],
+                      keep_prob: data.hparams['keep_probability']})
 
         total_train_loss += loss
         end_time = time.time()
         batch_time = end_time - start_time
 
-        if batch_i % tparams['display_step'] == 0:
+        if batch_i % data.tparams['display_step'] == 0:
             print('Epoch {}/{} -+- Batch {}/{} -+- Loss: {} -+- Seconds: {}'.format(
                 epoch_i,
-                hparams['epochs'],
+                data.hparams['epochs'],
                 batch_i,
-                len(train_questions) // hparams['batch_size'],
-                round(total_train_loss / tparams['display_step'], 4),
-                round(batch_time * tparams['display_step'])
+                len(train_questions) // data.hparams['batch_size'],
+                round(total_train_loss / data.tparams['display_step'], 4),
+                round(batch_time * data.tparams['display_step'])
             ))
             total_train_loss = 0
 
@@ -241,7 +214,7 @@ for epoch_i in range(1, hparams['epochs'] + 1):
             for batch_ii, (questions_batch_ii, answers_batch_ii) \
                     in enumerate(batch_data(valid_questions,
                                             valid_answers,
-                                            hparams['batch_size'],
+                                            data.hparams['batch_size'],
                                             vocab_to_int['<PAD>'])):
 
                 valid_loss = \
@@ -249,37 +222,37 @@ for epoch_i in range(1, hparams['epochs'] + 1):
                              {input_data: questions_batch_ii,
                               targets: answers_batch_ii,
                               sequence_length: answers_batch_ii.shape[1],
-                              lr: hparams['learning_rate'],
+                              lr: data.hparams['learning_rate'],
                               keep_prob: 1})
 
                 total_valid_loss += valid_loss
 
             end_time = time.time()
             batch_time = end_time - start_time
-            avg_valid_loss = round(total_valid_loss / (len(valid_questions) / hparams['batch_size']), 4)
+            avg_valid_loss = round(total_valid_loss / (len(valid_questions) / data.hparams['batch_size']), 4)
 
             print('Valid Loss: {} ----- Seconds: {} ----- Time: {}'.format(avg_valid_loss,
                                                                            round(batch_time),
                                                                            str(datetime.now())))
 
             # Reduce learning rate, but not below its minimum value
-            hparams['learning_rate'] *= hparams['learning_rate_decay']
-            if hparams['learning_rate'] < hparams['min_learning_rate']:
-                hparams['learning_rate'] = hparams['min_learning_rate']
+            data.hparams['learning_rate'] *= data.hparams['learning_rate_decay']
+            if data.hparams['learning_rate'] < data.hparams['min_learning_rate']:
+                data.hparams['learning_rate'] = data.hparams['min_learning_rate']
 
             summary_valid_loss.append(avg_valid_loss)
             if avg_valid_loss <= min(summary_valid_loss):
                 print('New Record!')
                 stop_early = 0
-                saver.save(sess, tparams['checkpoint'])
+                saver.save(sess, data.tparams['checkpoint'])
 
             else:
                 print('No Improvement.')
                 stop_early += 1
-                if stop_early == tparams['stop']:
+                if stop_early == data.tparams['stop']:
                     break
 
-    if stop_early == tparams['stop']:
+    if stop_early == data.tparams['stop']:
         print('Stopping Training.')
         break
 
@@ -301,7 +274,7 @@ input_question = \
 
 # Add empty questions so input data is correct shape
 batch_shell = \
-    np.zeros((hparams['batch_size'], max_line_length))
+    np.zeros((data.hparams['batch_size'], max_line_length))
 
 # Set first question to be out input question
 answer_logits = \

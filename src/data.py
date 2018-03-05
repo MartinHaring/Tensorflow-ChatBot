@@ -1,9 +1,36 @@
 import re
 
-params = {
+# Data-parameters indicate boundaries for words and lines
+dparams = {
     'max_line_length': 18,
     'min_line_length': 2,
     'threshold': 13
+}
+
+# Training-parameters indicate information about training output
+tparams = {
+    # Check training loss every x batches
+    'display_step': 100,
+
+    # If validation loss does decrease in x consectutive checks, stop training
+    'stop': 5,
+
+    # Path to checkpoint file
+    'checkpoint': './best_model.ckpt'
+}
+
+# Hyper-parameters indicate variables used by the neural net
+hparams = {
+    'epochs': 5,
+    'batch_size': 128,
+    'rnn_size': 256,
+    'num_layers': 2,
+    'encoding_embedding_size': 256,
+    'decoding_embedding_size': 256,
+    'learning_rate': 0.005,
+    'learning_rate_decay': 0.95,
+    'min_learning_rate': 0.0001,
+    'keep_probability': 0.8
 }
 
 
@@ -48,7 +75,7 @@ def get_vocab_to_int():
     vocab = fill_vocab({}, short_q + short_a)
 
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
-    threshold = params['threshold']
+    threshold = dparams['threshold']
 
     vocab_to_int = fill_vti({}, vocab, threshold)
     vocab_to_int = add_codes(codes, vocab_to_int)
@@ -143,8 +170,8 @@ def clean_text(text):
 # Fill question and answer lists with sentences that have appropriate lengths
 def fill_short_qa(short_q, short_a, clean_q, clean_a):
 
-    min_length = params['min_line_length']
-    max_length = params['max_line_length']
+    min_length = dparams['min_line_length']
+    max_length = dparams['max_line_length']
 
     i = 0
     for sent in clean_q:
@@ -210,7 +237,7 @@ def sort_ints(ints, max_length, basis):
 # Sort questions and answers
 def get_sorted_qa():
 
-    max_line_length = params['max_line_length']
+    max_line_length = dparams['max_line_length']
 
     int_q, int_a = get_int_qa()
 
