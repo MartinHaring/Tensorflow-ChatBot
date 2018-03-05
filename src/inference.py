@@ -2,9 +2,10 @@ import tensorflow as tf
 import numpy as np
 import data
 import training
+from datetime import datetime
 from model import seq2seq_model
 
-
+print('Inference preparation started @ {}'.format(str(datetime.now())))
 print('Initialize Session...')
 input_question = ''
 
@@ -46,11 +47,15 @@ train_logits, inference_logits = \
                   training.hparams['num_layers'],
                   vocab_to_int)
 
-# Create a tensor for inference logits, needed for loading checkpoints
+print('Load neural network...')
 tf.identity(inference_logits, 'logits')
 
 saver = tf.train.import_meta_graph(training.tparams['checkpoint'] + '.meta')
 saver.restore(sess, training.tparams['checkpoint'])
+
+
+print('Inference preparation finished @ {}\n'.format(str(datetime.now())))
+
 
 while input_question != 'quit':
     input_question = input('Enter input: ')
