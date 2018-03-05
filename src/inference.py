@@ -5,12 +5,6 @@ import training
 from model import seq2seq_model
 
 
-# Prepare question for the model
-def question_to_seq(question, vti):
-    question = data.clean_text(question)
-    return [vti.get(word, vti['<UNK>']) for word in question.split()]
-
-
 print('Initialize Session...')
 input_question = ''
 
@@ -63,7 +57,7 @@ while input_question != 'quit':
 
     # Prepare question
     input_question = \
-        question_to_seq(input_question, vocab_to_int)
+        data.q_to_seq(input_question, vocab_to_int)
 
     # Pad the question until it equals the max line length
     input_question = \

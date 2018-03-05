@@ -218,3 +218,9 @@ def get_sorted_qa():
     sorted_a = sort_ints(int_a, max_line_length, int_q)
 
     return sorted_q, sorted_a
+
+
+# Translate a given question into their corresponding indeces indicated by a vocab
+def q_to_seq(q, vti):
+    q = clean_text(q)
+    return [vti.get(word, vti['<UNK>']) for word in q.split()]
