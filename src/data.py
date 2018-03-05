@@ -1,9 +1,9 @@
 import re
 
 params = {
-    'max_line_length': 15,
+    'max_line_length': 18,
     'min_line_length': 2,
-    'threshold': 20
+    'threshold': 13
 }
 
 
