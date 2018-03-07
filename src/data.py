@@ -2,9 +2,9 @@ import re
 
 # Data-parameters indicate boundaries for words and lines
 dparams = {
-    'max_line_length': 18,
+    'max_line_length': 12,
     'min_line_length': 2,
-    'threshold': 13
+    'threshold': 24
 }
 
 # Training-parameters indicate information about training output
@@ -21,12 +21,13 @@ tparams = {
 
 # Hyper-parameters indicate variables used by the neural net
 hparams = {
-    'epochs': 5,
+    'epochs': 1,
     'batch_size': 128,
     'rnn_size': 256,
     'num_layers': 2,
     'encoding_embedding_size': 256,
     'decoding_embedding_size': 256,
+    'attn_length': 10,
     'learning_rate': 0.005,
     'learning_rate_decay': 0.95,
     'min_learning_rate': 0.0001,
