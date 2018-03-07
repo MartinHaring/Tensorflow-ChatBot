@@ -23,7 +23,7 @@ train_graph = tf.Graph()
 
 with train_graph.as_default():
 
-    print('Initialize placeholders...')
+    print('Initialize model...')
     # Create placeholders for inputs to the model, which are initially empty
     input_data, targets, lr, keep_prob = model_inputs()
 
@@ -36,7 +36,6 @@ with train_graph.as_default():
     # Find the shape of the input data for sequence_loss
     input_shape = tf.shape(input_data)
 
-    print('Initialize model...')
     # Create training and inference logits
     train_logits, inference_logits = \
         seq2seq_model(tf.reverse(input_data, [-1]),
