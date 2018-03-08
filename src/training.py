@@ -151,15 +151,14 @@ print('Start session...')
 with tf.Session(graph=train_graph) as sess:
     sess.run(tf.global_variables_initializer())
 
-
-#print('Check if Saver exists...')
-#if tf.train.checkpoint_exists(data.tparams['checkpoint']):
-#    print('Load Saver...')
-#    saver = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
-#    saver.restore(sess, data.tparams['checkpoint'])
-#else:
-#    print('Create Saver...')
-#    saver = tf.train.Saver()
+    print('Check if checkpoint exists...')
+    if tf.train.checkpoint_exists(data.tparams['checkpoint']):
+        print('Load checkpoint...')
+        saver = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
+        saver.restore(sess, data.tparams['checkpoint'])
+    else:
+        print('Create checkpoint saver...')
+        saver = tf.train.Saver()
 
     for epoch_i in range(1, data.hparams['epochs'] + 1):
 
@@ -231,7 +230,6 @@ with tf.Session(graph=train_graph) as sess:
                 if avg_valid_loss <= min(summary_valid_loss):
                     print('New Record!')
                     stop_early = 0
-                    saver = tf.train.Saver()
                     saver.save(sess, data.tparams['checkpoint'])
 
                 else:
@@ -267,6 +265,7 @@ with tf.Session(graph=loaded_graph) as sess:
     logits = loaded_graph.get_tensor_by_name('logits:0')
     keep_prob = loaded_graph.get_tensor_by_name('keep_prob:0')
 
+    # Generate answer
     answer_logits = sess.run(logits,
                              {input_data: [input_question],
                               keep_prob: 1.0})[0]
