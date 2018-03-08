@@ -149,16 +149,14 @@ print('\nTraining started @ {}'.format(str(datetime.now())))
 
 print('Start session...')
 with tf.Session(graph=train_graph) as sess:
+
     sess.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
 
     print('Check if checkpoint exists...')
     if tf.train.checkpoint_exists(data.tparams['checkpoint']):
         print('Load checkpoint...')
-        saver = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
         saver.restore(sess, data.tparams['checkpoint'])
-    else:
-        print('Create checkpoint saver...')
-        saver = tf.train.Saver()
 
     for epoch_i in range(1, data.hparams['epochs'] + 1):
 
