@@ -263,15 +263,14 @@ with tf.Session(graph=loaded_graph) as sess:
     logits = loaded_graph.get_tensor_by_name('logits:0')
     keep_prob = loaded_graph.get_tensor_by_name('keep_prob:0')
 
-    # Generate answer
     answer_logits = sess.run(logits,
                              {input_data: [input_question],
-                              keep_prob: 1.0})[0]
+                              keep_prob: 1})[0]
 
-print('Question')
-print('  Word Ids:       {}'.format([i for i in input_question]))
-print('  Input Words:    {}'.format([int_to_vocab[i] for i in input_question]))
+    print('Question')
+    print('  Word Ids:       {}'.format([i for i in input_question]))
+    print('  Input Words:    {}'.format([int_to_vocab[i] for i in input_question]))
 
-print('\nAnswer')
-print('  Word Ids:       {}'.format([i for i in np.argmax(answer_logits, 1)]))
-print('  Response Words: {}'.format([int_to_vocab[i] for i in np.argmax(answer_logits, 1)]))
+    print('\nAnswer')
+    print('  Word Ids:       {}'.format([i for i in np.argmax(answer_logits, 1)]))
+    print('  Response Words: {}'.format([int_to_vocab[i] for i in np.argmax(answer_logits, 1)]))
