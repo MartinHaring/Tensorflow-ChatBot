@@ -2,18 +2,18 @@ import re
 
 # Data-parameters indicate boundaries for words and lines
 dparams = {
-    'max_line_length': 12,
-    'min_line_length': 2,
-    'threshold': 24
+    'max_line_length': 20,
+    'min_line_length': 1,
+    'threshold': 10
 }
 
 # Training-parameters indicate information about training output
 tparams = {
     # Check training loss every x batches
-    'display_step': 100,
+    'display_step': 50,
 
-    # If validation loss does decrease in x consectutive checks, stop training
-    'stop': 5,
+    # If validation loss decreases in x consectutive checks, stop training
+    'stop': 8,
 
     # Path to checkpoint file
     'checkpoint': './best_model.ckpt'
@@ -21,7 +21,7 @@ tparams = {
 
 # Hyper-parameters indicate variables used by the neural net
 hparams = {
-    'epochs': 1,
+    'epochs': 10,
     'batch_size': 128,
     'rnn_size': 256,
     'num_layers': 2,
@@ -152,6 +152,7 @@ def clean_text(text):
     text = re.sub(r"that's", 'that is', text)
     text = re.sub(r"what's", 'what is', text)
     text = re.sub(r"where's", 'where is', text)
+    text = re.sub(r"there's", 'there is', text)
     text = re.sub(r"how's", 'how is', text)
     text = re.sub(r"\'ll", ' will', text)
     text = re.sub(r"\'ve", ' have', text)
