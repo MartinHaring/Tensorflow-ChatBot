@@ -1,2 +1,7 @@
+# Checkpoint specific
 best_model.ckpt.*
 checkpoint
+
+# IntelliJ specific
+#*.iml
+#.idea/
