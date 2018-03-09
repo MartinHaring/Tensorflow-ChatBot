@@ -13,7 +13,7 @@ tparams = {
     'display_step': 50,
 
     # If validation loss decreases in x consectutive checks, stop training
-    'stop': 8,
+    'stop': 5,
 
     # Path to checkpoint file
     'checkpoint': './best_model.ckpt'
