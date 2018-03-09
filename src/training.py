@@ -238,8 +238,9 @@ print('Training finished @ {}\n'.format(str(datetime.now())))
 
 
 # ---------- Testing ----------
-# Create input question
-input_question = 'How are you?'
+# Choose random input question
+r = np.random.choice(len(sorted_questions))
+input_question = sorted_questions[r]
 
 # Prepare question
 input_question = \
