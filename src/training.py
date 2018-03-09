@@ -8,9 +8,6 @@ from model import model_inputs, seq2seq_model
 
 # ---------- Preparations ----------
 print('Training preparation started @ {}'.format(str(datetime.now())))
-
-max_line_length = data.dparams['max_line_length']
-
 print('Initialize vocabulary...')
 vocab_to_int, int_to_vocab = data.get_word_dicts()
 
@@ -18,7 +15,6 @@ print('Initialize training set...')
 sorted_questions, sorted_answers = data.get_sorted_qa()
 
 print('Initialize graph...')
-# Reset the graph to ensure that it is ready for training
 train_graph = tf.Graph()
 
 with train_graph.as_default():
@@ -29,7 +25,7 @@ with train_graph.as_default():
 
     # Sequence length will be the max line length for each batch
     sequence_length = \
-        tf.placeholder_with_default(max_line_length,
+        tf.placeholder_with_default(data.dparams['max_line_length'],
                                     None,
                                     name='sequence_length')
 
@@ -51,7 +47,6 @@ with train_graph.as_default():
                       vocab_to_int,
                       data.hparams['attn_length'])
 
-    # Create a tensor for inference logits, needed for loading checkpoints
     # Create a tensor to be used for making predictions
     tf.identity(inference_logits, 'logits')
 
@@ -81,7 +76,7 @@ with train_graph.as_default():
             optimizer.apply_gradients(capped_gradients)
 
 
-print('Split training set into training and validating data...')
+print('Initialize training parameters...')
 # Validate the training with 10% of the data
 train_valid_split = \
     int(len(sorted_questions)*0.1)
@@ -99,8 +94,6 @@ valid_questions = \
 valid_answers = \
     sorted_answers[:train_valid_split]
 
-
-print('Initialize training parameters...')
 # Record training loss for each display step
 total_train_loss = 0
 

@@ -21,9 +21,9 @@ with tf.Session(graph=loaded_graph) as sess:
 
     print('Inference preparation finished @ {}\n'.format(str(datetime.now())))
     print('\nInference started @ {}'.format(str(datetime.now())))
-    print("\nEnter 'quit' to end the session.\n")
+    print("(Enter 'quit' to end the session)")
     while True:
-        input_question = input('Enter input: ')
+        input_question = input('\nEnter input: ')
 
         if input_question.lower() == 'quit':
             break
@@ -35,6 +35,6 @@ with tf.Session(graph=loaded_graph) as sess:
                                  {input_data: [input_question],
                                   keep_prob: 1})[0]
 
-        print('\nTensorBot: {}\n'.format(' '.join([int_to_vocab[i] for i in np.argmax(answer_logits, 1)])))
+        print('\nTensorBot: {}'.format(' '.join([int_to_vocab[i] for i in np.argmax(answer_logits, 1)])))
     print('\n\nSession ended.')
 print('\nInference finished @ {}'.format(str(datetime.now())))
