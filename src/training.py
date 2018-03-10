@@ -30,7 +30,7 @@ with train_graph.as_default():
 
     print('Initialize model...')
     # Create placeholders for inputs to the model, which are initially empty
-    input_data, targets, lr, keep_prob = model_inputs()
+    input_data, targets, learn_rate, keep_prob = model_inputs()
 
     # Sequence length will be the max line length for each batch
     sequence_length = \
@@ -46,15 +46,15 @@ with train_graph.as_default():
         seq2seq_model(tf.reverse(input_data, [-1]),
                       targets,
                       keep_prob,
-                      data.hparams['batch_size'],
+                      batch_size,
                       sequence_length,
                       len(vocab_to_int),
-                      data.hparams['encoding_embedding_size'],
-                      data.hparams['decoding_embedding_size'],
-                      data.hparams['rnn_size'],
-                      data.hparams['num_layers'],
+                      enc_embed_size,
+                      dec_embed_size,
+                      rnn_size,
+                      num_layers,
                       vocab_to_int,
-                      data.hparams['attn_length'])
+                      attn_length)
 
     # Create a tensor to be used for making predictions
     tf.identity(inference_logits, 'logits')
@@ -70,7 +70,7 @@ with train_graph.as_default():
 
         # Optimizer
         optimizer = \
-            tf.train.AdamOptimizer(data.hparams['learning_rate'])
+            tf.train.AdamOptimizer(lr)
 
         # Gradient Clipping
         gradients = \
@@ -114,7 +114,7 @@ stop_early = 0
 
 # Modulus for checking validation loss (check when 50% and 100% are done)
 validation_check = \
-    ((len(train_questions)) // data.hparams['batch_size'] // 2) - 1
+    ((len(train_questions)) // batch_size // 2) - 1
 
 
 print('Training preparation finished @ {}\n'.format(str(datetime.now())))
@@ -156,16 +156,16 @@ with tf.Session(graph=train_graph) as sess:
     saver = tf.train.Saver()
 
     print('Check if checkpoint exists...')
-    if tf.train.checkpoint_exists(data.tparams['checkpoint']):
+    if tf.train.checkpoint_exists(checkpoint):
         print('Load checkpoint...')
-        saver.restore(sess, data.tparams['checkpoint'])
+        saver.restore(sess, checkpoint)
 
-    for epoch_i in range(1, data.hparams['epochs'] + 1):
+    for epoch_i in range(1, epochs + 1):
 
         for batch_i, (questions_batch_i, answers_batch_i) \
                 in enumerate(batch_data(train_questions,
                                         train_answers,
-                                        data.hparams['batch_size'],
+                                        batch_size,
                                         vocab_to_int['<PAD>'])):
 
             start_time = time.time()
@@ -174,22 +174,22 @@ with tf.Session(graph=train_graph) as sess:
                 sess.run([train_op, cost],
                          {input_data: questions_batch_i,
                           targets: answers_batch_i,
-                          lr: data.hparams['learning_rate'],
+                          learn_rate: lr,
                           sequence_length: answers_batch_i.shape[1],
-                          keep_prob: data.hparams['keep_probability']})
+                          keep_prob: keep_probability})
 
             total_train_loss += loss
             end_time = time.time()
             batch_time = end_time - start_time
 
-            if batch_i % data.tparams['display_step'] == 0:
+            if batch_i % display_step == 0:
                 print('Epoch {}/{} -+- Batch {}/{} -+- Loss: {} -+- Seconds: {}'.format(
                     epoch_i,
-                    data.hparams['epochs'],
+                    epochs,
                     batch_i,
-                    len(train_questions) // data.hparams['batch_size'],
-                    round(total_train_loss / data.tparams['display_step'], 4),
-                    round(batch_time * data.tparams['display_step'])
+                    len(train_questions) // batch_size,
+                    round(total_train_loss / display_step, 4),
+                    round(batch_time * display_step)
                 ))
                 total_train_loss = 0
 
@@ -200,14 +200,14 @@ with tf.Session(graph=train_graph) as sess:
                 for batch_ii, (questions_batch_ii, answers_batch_ii) \
                         in enumerate(batch_data(valid_questions,
                                                 valid_answers,
-                                                data.hparams['batch_size'],
+                                                batch_size,
                                                 vocab_to_int['<PAD>'])):
 
                     valid_loss = \
                         sess.run(cost,
                                  {input_data: questions_batch_ii,
                                   targets: answers_batch_ii,
-                                  lr: data.hparams['learning_rate'],
+                                  learn_rate: lr,
                                   sequence_length: answers_batch_ii.shape[1],
                                   keep_prob: 1})
 
@@ -215,30 +215,30 @@ with tf.Session(graph=train_graph) as sess:
 
                 end_time = time.time()
                 batch_time = end_time - start_time
-                avg_valid_loss = round(total_valid_loss / (len(valid_questions) / data.hparams['batch_size']), 4)
+                avg_valid_loss = round(total_valid_loss / (len(valid_questions) / batch_size), 4)
 
                 print('Valid Loss: {} ----- Seconds: {} ----- Time: {}'.format(avg_valid_loss,
                                                                                round(batch_time),
                                                                                str(datetime.now())))
 
                 # Reduce learning rate, but not below its minimum value
-                data.hparams['learning_rate'] *= data.hparams['learning_rate_decay']
-                if data.hparams['learning_rate'] < data.hparams['min_learning_rate']:
-                    data.hparams['learning_rate'] = data.hparams['min_learning_rate']
+                lr *= lr_decay
+                if lr < min_lr:
+                    lr = min_lr
 
                 summary_valid_loss.append(avg_valid_loss)
                 if avg_valid_loss <= min(summary_valid_loss):
                     print('New Record!')
                     stop_early = 0
-                    saver.save(sess, data.tparams['checkpoint'])
+                    saver.save(sess, checkpoint)
 
                 else:
                     print('No Improvement.')
                     stop_early += 1
-                    if stop_early == data.tparams['stop']:
+                    if stop_early == stop:
                         break
 
-        if stop_early == data.tparams['stop']:
+        if stop_early == stop:
             print('Stopping Training.')
             break
 
@@ -258,8 +258,8 @@ input_question = \
 loaded_graph = tf.Graph()
 with tf.Session(graph=loaded_graph) as sess:
     # Load the saved model
-    loader = tf.train.import_meta_graph(data.tparams['checkpoint'] + '.meta')
-    loader.restore(sess, data.tparams['checkpoint'])
+    loader = tf.train.import_meta_graph(checkpoint + '.meta')
+    loader.restore(sess, checkpoint)
 
     # Load the tensors to be used as inputs
     input_data = loaded_graph.get_tensor_by_name('input:0')
