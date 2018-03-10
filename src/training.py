@@ -8,6 +8,9 @@ from model import model_inputs, seq2seq_model
 
 # ---------- Preparations ----------
 print('Training preparation started @ {}'.format(str(datetime.now())))
+print('Initialize params...')
+max_length = data.dparams['max_line_length']
+
 print('Initialize vocabulary...')
 vocab_to_int, int_to_vocab = data.get_word_dicts()
 

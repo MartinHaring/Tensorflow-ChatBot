@@ -7,8 +7,14 @@ dparams = {
     'threshold': 10
 }
 
-# Training-parameters indicate information about training output
+# Training-parameters provide data used in training
 tparams = {
+    # Amount of times the training data is processed by the network
+    'epochs': 10,
+
+    # Amount of sentences that are processed at once
+    'batch_size': 128,
+
     # Check training loss every x batches
     'display_step': 50,
 
@@ -19,10 +25,8 @@ tparams = {
     'checkpoint': './best_model.ckpt'
 }
 
-# Hyper-parameters indicate variables used by the neural net
+# Hyper-parameters are variables used by the neural net
 hparams = {
-    'epochs': 10,
-    'batch_size': 128,
     'rnn_size': 256,
     'num_layers': 2,
     'encoding_embedding_size': 256,
@@ -33,6 +37,11 @@ hparams = {
     'min_learning_rate': 0.0001,
     'keep_probability': 0.8
 }
+
+
+# Fetch hparams and tparams individually
+def fetch_hparams():
+    return hparams['epochs']
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
