@@ -41,7 +41,23 @@ hparams = {
 
 # Fetch hparams and tparams individually
 def fetch_hparams():
-    return hparams['epochs']
+    return hparams['rnn_size'], \
+           hparams['num_layers'], \
+           hparams['encoding_embedding_size'], \
+           hparams['decoding_embedding_size'], \
+           hparams['attn_length'], \
+           hparams['learning_rate'], \
+           hparams['learning_rate_decay'], \
+           hparams['min_learning_rate'], \
+           hparams['keep_probability']
+
+
+def fetch_tparams():
+    return tparams['epochs'], \
+           tparams['batch_size'], \
+           tparams['display_step'], \
+           tparams['stop'], \
+           tparams['checkpoint']
 
 
 # Create a vocabulary, containing the frequency of each word of a given list

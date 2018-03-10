@@ -11,6 +11,12 @@ print('Training preparation started @ {}'.format(str(datetime.now())))
 print('Initialize params...')
 max_length = data.dparams['max_line_length']
 
+rnn_size, num_layers, enc_embed_size, dec_embed_size, attn_length, lr, lr_decay, min_lr, keep_probability = \
+    data.fetch_hparams()
+
+epochs, batch_size, display_step, stop, checkpoint = \
+    data.fetch_tparams()
+
 print('Initialize vocabulary...')
 vocab_to_int, int_to_vocab = data.get_word_dicts()
 
