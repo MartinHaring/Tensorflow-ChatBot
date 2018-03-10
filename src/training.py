@@ -28,7 +28,7 @@ with train_graph.as_default():
 
     # Sequence length will be the max line length for each batch
     sequence_length = \
-        tf.placeholder_with_default(data.dparams['max_line_length'],
+        tf.placeholder_with_default(max_length,
                                     None,
                                     name='sequence_length')
 
