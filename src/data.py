@@ -3,7 +3,7 @@ import re
 # Data-parameters indicate boundaries for words and lines
 dparams = {
     'max_line_length': 20,
-    'min_line_length': 1,
+    'min_line_length': 3,
     'threshold': 10
 }
 
@@ -13,7 +13,7 @@ tparams = {
     'display_step': 50,
 
     # If validation loss decreases in x consectutive checks, stop training
-    'stop': 5,
+    'stop': 7,
 
     # Path to checkpoint file
     'checkpoint': './best_model.ckpt'
