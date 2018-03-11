@@ -230,10 +230,10 @@ def get_word_dicts():
 
 
 # Convert the text to ints and replace rare words with <UNK>
-def fill_ints(sent, vocab_to_int):
-    return [vocab_to_int['<UNK>']
-            if word not in vocab_to_int
-            else vocab_to_int[word]
+def fill_ints(sent, vti):
+    return [vti[word]
+            if word in vti
+            else vti['<UNK>']
             for word in sent.split()]
 
 
