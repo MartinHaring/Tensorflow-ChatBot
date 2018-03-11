@@ -60,69 +60,6 @@ def fetch_tparams():
            tparams['checkpoint']
 
 
-# Create a vocabulary, containing the frequency of each word of a given list
-def fill_vocab(vocab, short_qa):
-
-    for qa in short_qa:
-        for word in qa.split():
-            if word not in vocab:
-                vocab[word] = 1
-            else:
-                vocab[word] += 1
-
-    return vocab
-
-
-# Fill a dict that maps words with indeces, ignore rare words
-def fill_vti(vti, vocab, threshold):
-
-    word_id = 0
-    for word, frequency in vocab.items():
-        if frequency >= threshold:
-            vti[word] = word_id
-            word_id += 1
-
-    return vti
-
-
-# Add unique elements to vocabs
-def add_codes(codes, vti):
-
-    for c in codes:
-        vti[c] = len(vti) + 1
-
-    return vti
-
-
-# Create dicts to provide unique indeces for common words; also add unique elements
-def get_vocab_to_int():
-
-    short_q, short_a = get_short_qa()
-    vocab = fill_vocab({}, short_q + short_a)
-
-    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
-    threshold = dparams['threshold']
-
-    vocab_to_int = fill_vti({}, vocab, threshold)
-    vocab_to_int = add_codes(codes, vocab_to_int)
-
-    return vocab_to_int
-
-
-# Switch places of keys and values of a dict
-def reverse_dict(vocab_to_int):
-    return {v_i: v for v, v_i in vocab_to_int.items()}
-
-
-# Create dicts to provide unique indeces for each word and vice versa
-def get_word_dicts():
-
-    vocab_to_int = get_vocab_to_int()
-    int_to_vocab = reverse_dict(vocab_to_int)
-
-    return vocab_to_int, int_to_vocab
-
-
 # Load all lines from a file
 def load_lines(filename):
     return open(filename,
@@ -229,6 +166,69 @@ def get_short_qa():
     short_answers = [a + ' <EOS>' for a in short_answers]
 
     return short_questions, short_answers
+
+
+# Create a vocabulary, containing the frequency of each word of a given list
+def fill_vocab(vocab, short_qa):
+
+    for qa in short_qa:
+        for word in qa.split():
+            if word not in vocab:
+                vocab[word] = 1
+            else:
+                vocab[word] += 1
+
+    return vocab
+
+
+# Fill a dict that maps words with indeces, ignore rare words
+def fill_vti(vti, vocab, threshold):
+
+    word_id = 0
+    for word, frequency in vocab.items():
+        if frequency >= threshold:
+            vti[word] = word_id
+            word_id += 1
+
+    return vti
+
+
+# Add unique elements to vocabs
+def add_codes(codes, vti):
+
+    for c in codes:
+        vti[c] = len(vti) + 1
+
+    return vti
+
+
+# Create dicts to provide unique indeces for common words; also add unique elements
+def get_vocab_to_int():
+
+    short_q, short_a = get_short_qa()
+    vocab = fill_vocab({}, short_q + short_a)
+
+    codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
+    threshold = dparams['threshold']
+
+    vocab_to_int = fill_vti({}, vocab, threshold)
+    vocab_to_int = add_codes(codes, vocab_to_int)
+
+    return vocab_to_int
+
+
+# Switch places of keys and values of a dict
+def reverse_dict(dictionary):
+    return {v_i: v for v, v_i in dictionary.items()}
+
+
+# Create dicts to provide unique indeces for each word and vice versa
+def get_word_dicts():
+
+    vocab_to_int = get_vocab_to_int()
+    int_to_vocab = reverse_dict(vocab_to_int)
+
+    return vocab_to_int, int_to_vocab
 
 
 # Convert the text to ints and replace rare words with <UNK>
