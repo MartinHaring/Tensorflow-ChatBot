@@ -163,8 +163,6 @@ def get_short_qa():
                       short_answers_temp,
                       short_questions_temp)
 
-    short_answers = [a + ' <EOS>' for a in short_answers]
-
     return short_questions, short_answers
 
 
@@ -244,6 +242,8 @@ def get_int_qa():
 
     short_q, short_a = get_short_qa()
     vocab_to_int = get_vocab_to_int()
+
+    short_a = [a + ' <EOS>' for a in short_a]
 
     int_q = [fill_ints(q, vocab_to_int) for q in short_q]
     int_a = [fill_ints(a, vocab_to_int) for a in short_a]
