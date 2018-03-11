@@ -3,7 +3,7 @@ import re
 # Data-parameters indicate boundaries for words and lines
 dparams = {
     'max_line_length': 20,
-    'min_line_length': 3,
+    'min_line_length': 2,
     'threshold': 10
 }
 
@@ -86,12 +86,12 @@ def fill_vti(vti, vocab, threshold):
 
 
 # Add unique elements to vocabs
-def add_codes(codes, vocab_to_int):
+def add_codes(codes, vti):
 
     for c in codes:
-        vocab_to_int[c] = len(vocab_to_int) + 1
+        vti[c] = len(vti) + 1
 
-    return vocab_to_int
+    return vti
 
 
 # Create dicts to provide unique indeces for common words; also add unique elements
