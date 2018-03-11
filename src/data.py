@@ -135,8 +135,7 @@ def create_line_dict(lines):
     return {line[0]: line[4]
             for line
             in [l.split(' +++$+++ ')
-                for l
-                in lines]
+                for l in lines]
             if len(line) == 5}
 
 
@@ -145,8 +144,7 @@ def get_convs(conv_lines):
     return [id_list.split(',')
             for id_list
             in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '')
-                for l
-                in conv_lines]]
+                for l in conv_lines]]
 
 
 # Sort the sentences into questions (inputs) and answers (targets)
