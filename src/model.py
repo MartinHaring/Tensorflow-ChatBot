@@ -49,7 +49,7 @@ def encoding_layer(rnn_inputs,
                    rnn_size,
                    num_layers,
                    keep_prob,
-                   sequence_length,
+                   seq_length,
                    attn_length):
 
     lstm = \
@@ -69,7 +69,7 @@ def encoding_layer(rnn_inputs,
     _, enc_state = \
         tf.nn.bidirectional_dynamic_rnn(cell_fw=enc_cell,
                                         cell_bw=enc_cell,
-                                        sequence_length=sequence_length,
+                                        sequence_length=seq_length,
                                         inputs=rnn_inputs,
                                         dtype=tf.float32)
 
