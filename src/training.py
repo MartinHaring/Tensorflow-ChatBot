@@ -132,14 +132,14 @@ def pad_sentence_batch(sentence_batch, pad_id):
 
 
 # Batch questions and answers together
-def batch_data(questions, answers, batch_size, pad_id):
+def batch_data(questions, answers, b_size, pad_id):
 
-    for b_i in range(0, len(questions) // batch_size):
+    for b_i in range(0, len(questions) // b_size):
 
-        start_i = b_i * batch_size
+        start_i = b_i * b_size
 
-        q_b = questions[start_i:start_i + batch_size]
-        a_b = answers[start_i:start_i + batch_size]
+        q_b = questions[start_i:start_i + b_size]
+        a_b = answers[start_i:start_i + b_size]
 
         pad_q_b = np.array(pad_sentence_batch(q_b, pad_id))
         pad_a_b = np.array(pad_sentence_batch(a_b, pad_id))
