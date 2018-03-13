@@ -149,7 +149,7 @@ def decoding_layer(dec_embed_input,
 
         drop = \
             tf.contrib.rnn.DropoutWrapper(lstm,
-                                          input_keep_prob=keep_prob)
+                                          output_keep_prob=keep_prob)
 
         cell = \
             tf.contrib.rnn.AttentionCellWrapper(drop,
