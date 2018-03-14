@@ -237,6 +237,8 @@ with tf.Session(graph=train_graph) as sess:
                     stop_early += 1
                     if stop_early == stop:
                         break
+                    if stop_early >= stop_early // 2:
+                        saver.restore(sess, checkpoint)
 
         if stop_early == stop:
             print('Stopping Training.')

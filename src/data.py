@@ -16,10 +16,10 @@ tparams = {
     'batch_size': 128,
 
     # Check training loss every x batches
-    'display_step': 50,
+    'display_step': 100,
 
     # If validation loss decreases in x consectutive checks, stop training
-    'stop': 7,
+    'stop': 8,
 
     # Path to checkpoint file
     'checkpoint': './best_model.ckpt'
