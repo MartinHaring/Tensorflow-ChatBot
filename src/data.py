@@ -31,7 +31,7 @@ hparams = {
     'num_layers': 2,
     'encoding_embedding_size': 256,
     'decoding_embedding_size': 256,
-    'attn_length': 10,
+    'attn_length': 16,
     'learning_rate': 0.005,
     'learning_rate_decay': 0.95,
     'min_learning_rate': 0.0001,
