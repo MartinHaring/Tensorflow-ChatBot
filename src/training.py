@@ -249,7 +249,7 @@ print('Training finished @ {}\n'.format(str(datetime.now())))
 # ---------- Testing ----------
 # Choose random input question
 r = np.random.choice(len(sorted_questions))
-input_question = sorted_questions[r]
+input_question = ' '.join([int_to_vocab[i] for i in sorted_questions[r]])
 
 # Prepare question
 input_question = \
