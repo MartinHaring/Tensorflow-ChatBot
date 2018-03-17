@@ -34,7 +34,7 @@ with train_graph.as_default():
         seq2seq_model(tf.reverse(input_data, [-1]),
                       targets,
                       keep_prob,
-                      data.hparams['batch_size'],
+                      data.tparams['batch_size'],
                       sequence_length,
                       len(vocab_to_int),
                       data.hparams['encoding_embedding_size'],
