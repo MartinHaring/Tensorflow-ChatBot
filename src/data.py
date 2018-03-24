@@ -2,27 +2,30 @@ import re
 
 # Data-parameters indicate boundaries for words and lines
 dparams = {
-    'max_line_length': 20,
+    'max_line_length': 10,
     'min_line_length': 2,
-    'threshold': 10
+    'threshold': 15
 }
 
 # Training-parameters provide data used in training
 tparams = {
     # Amount of times the training data is processed by the network
-    'epochs': 10,
+    'epochs': 5,
 
     # Amount of sentences that are processed at once
-    'batch_size': 128,
+    'batch_size': 256,
 
     # Check training loss every x batches
-    'display_step': 100,
+    'display_step': 50,
+
+    # Amount of validation per epoch
+    'validations': 4,
 
     # If validation loss decreases in x consectutive checks, stop training
-    'stop': 8,
+    'stop': 6,
 
     # Path to checkpoint file
-    'checkpoint': './best_model.ckpt'
+    'checkpoint': './model-attn128.ckpt'
 }
 
 # Hyper-parameters are variables used by the neural net
@@ -31,7 +34,7 @@ hparams = {
     'num_layers': 2,
     'encoding_embedding_size': 256,
     'decoding_embedding_size': 256,
-    'attn_length': 16,
+    'attn_length': 32,
     'learning_rate': 0.005,
     'learning_rate_decay': 0.95,
     'min_learning_rate': 0.0001,
@@ -56,6 +59,7 @@ def fetch_tparams():
     return tparams['epochs'], \
            tparams['batch_size'], \
            tparams['display_step'], \
+           tparams['validations'], \
            tparams['stop'], \
            tparams['checkpoint']
 
