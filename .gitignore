@@ -1,5 +1,6 @@
 # Checkpoint specific
 best_model.ckpt.*
+model-*
 checkpoint
 
 # IntelliJ specific
