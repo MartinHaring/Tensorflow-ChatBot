@@ -14,7 +14,7 @@ max_length = data.dparams['max_line_length']
 rnn_size, num_layers, enc_embed_size, dec_embed_size, attn_length, lr, lr_decay, min_lr, keep_probability = \
     data.fetch_hparams()
 
-epochs, batch_size, display_step, stop, checkpoint = \
+epochs, batch_size, display_step, validations, stop, checkpoint = \
     data.fetch_tparams()
 
 print('Initialize vocabulary...')
@@ -113,8 +113,7 @@ summary_valid_loss = []
 stop_early = 0
 
 # Modulus for checking validation loss (check when 50% and 100% are done)
-validation_check = \
-    ((len(train_questions)) // batch_size // 2) - 1
+validation_check = ((len(train_questions)) // batch_size // validations) - 1
 
 
 print('Training preparation finished @ {}\n'.format(str(datetime.now())))
