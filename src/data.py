@@ -2,35 +2,35 @@ import re
 
 # Data-parameters indicate boundaries for words and lines
 dparams = {
-    'max_line_length': 10,
+    'max_line_length': 18,
     'min_line_length': 2,
-    'threshold': 15
+    'threshold': 10
 }
 
 # Training-parameters provide data used in training
 tparams = {
     # Amount of times the training data is processed by the network
-    'epochs': 5,
+    'epochs': 3,
 
     # Amount of sentences that are processed at once
-    'batch_size': 256,
+    'batch_size': 512,
 
     # Check training loss every x batches
-    'display_step': 50,
+    'display_step': 25,
 
     # Amount of validation per epoch
     'validations': 4,
 
     # If validation loss decreases in x consectutive checks, stop training
-    'stop': 6,
+    'stop': 10,
 
     # Path to checkpoint file
-    'checkpoint': './model-attn128.ckpt'
+    'checkpoint': './model-rnn128-2.ckpt'
 }
 
 # Hyper-parameters are variables used by the neural net
 hparams = {
-    'rnn_size': 256,
+    'rnn_size': 128,
     'num_layers': 2,
     'encoding_embedding_size': 256,
     'decoding_embedding_size': 256,
@@ -68,7 +68,7 @@ def fetch_tparams():
 def load_lines(filename):
     return open(filename,
                 encoding='utf-8',
-                errors='ignore').read().split('\n')
+                errors='ignore').read().split('\n')[:-1]
 
 
 # Create a dictionary to map each line's id with its text
@@ -76,31 +76,31 @@ def create_line_dict(lines):
     return {line[0]: line[4]
             for line
             in [l.split(' +++$+++ ')
-                for l in lines]
-            if len(line) == 5}
+                for l in lines]}
 
 
 # Create a list of all of the conversations' lines' ids
-def get_convs(conv_lines):
-    return [id_list.split(',')
-            for id_list
-            in [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '')
-                for l in conv_lines]]
+def get_convs(conv_lines, line_dict):
+    return [translate_conv(conv_ids, line_dict)
+            for conv_ids in [conv.split(',') for conv in extract_convs(conv_lines)]]
+
+
+def extract_convs(c_lines):
+    return [l.split(' +++$+++ ')[-1][1:-1].replace("'", "").replace(' ', '') for l in c_lines]
+
+
+def translate_conv(c, ld):
+    return [ld[i] for i in c]
 
 
 # Sort the sentences into questions (inputs) and answers (targets)
 def get_qa():
 
-    convs = get_convs(load_lines('movie_conversations.txt'))
     line_dict = create_line_dict(load_lines('movie_lines.txt'))
+    convs = get_convs(load_lines('movie_conversations.txt'), line_dict)
 
-    questions = [line_dict[conv[i]]
-                 for conv in convs
-                 for i in range(len(conv)-1)]
-
-    answers = [line_dict[conv[i+1]]
-               for conv in convs
-               for i in range(len(conv)-1)]
+    questions = [q for c_qs in [conv[:-1] for conv in convs] for q in c_qs]
+    answers = [a for c_as in [conv[1:] for conv in convs] for a in c_as]
 
     return questions, answers
 
@@ -149,7 +149,7 @@ def fill_short_qa(short_q, short_a, clean_q, clean_a):
     return short_q, short_a
 
 
-# Format questions and answers appropriately. Also, add the EOS element to every answer
+# Format questions and answers appropriately.
 def get_short_qa():
 
     questions, answers = get_qa()
