@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 
 # Data-parameters indicate boundaries for words and lines
 dparams = {
@@ -133,66 +134,49 @@ def clean_text(text):
     return text
 
 
-# Fill question and answer lists with sentences that have appropriate lengths
-def fill_short_qa(short_q, short_a, clean_q, clean_a):
-
-    min_length = dparams['min_line_length']
-    max_length = dparams['max_line_length']
-
-    i = 0
-    for sent in clean_q:
-        if len(sent.split()) >= min_length and len(sent.split()) <= max_length:
-            short_q.append(sent)
-            short_a.append(clean_a[i])
-        i += 1
-
-    return short_q, short_a
+def clean_tuple_map(x):
+    return tuple(map(clean_map, x))
 
 
-# Format questions and answers appropriately.
-def get_short_qa():
+def clean_map(x):
+    return clean_text(x)
+
+
+def len_filter(x):
+    return len(x[0].split(' ')) >= dparams['min_line_length'] \
+           and len(x[0].split(' ')) <= dparams['max_line_length'] \
+           and len(x[1].split(' ')) >= dparams['min_line_length'] \
+           and len(x[1].split(' ')) <= dparams['max_line_length']
+
+
+# Format and filter questions and answers appropriately.
+def get_filtered_qa():
 
     questions, answers = get_qa()
 
-    clean_questions = [clean_text(q) for q in questions]
-    clean_answers = [clean_text(a) for a in answers]
+    clean_qa = list(map(clean_tuple_map, list(zip(questions, answers))))
+    filtered_qa = list(filter(len_filter, clean_qa))
+    qa = list(zip(*filtered_qa))
 
-    short_questions_temp, short_answers_temp = \
-        fill_short_qa([], [],
-                      clean_questions,
-                      clean_answers)
-
-    short_answers, short_questions = \
-        fill_short_qa([], [],
-                      short_answers_temp,
-                      short_questions_temp)
-
-    return short_questions, short_answers
+    return qa[0], qa[1]
 
 
 # Create a vocabulary, containing the frequency of each word of a given list
-def fill_vocab(vocab, short_qa):
+def create_vocab(short_qa):
 
-    for qa in short_qa:
-        for word in qa.split():
-            if word not in vocab:
-                vocab[word] = 1
-            else:
-                vocab[word] += 1
+    words = [word for sentence
+             in [sentence.split() for sentence in short_qa]
+             for word in sentence]
 
-    return vocab
+    return dict(Counter(words))
 
 
-# Fill a dict that maps words with indeces, ignore rare words
-def fill_vti(vti, vocab, threshold):
+# Fill a dict that maps words with indeces, filter out rare words
+def get_vti(vocab, threshold):
 
-    word_id = 0
-    for word, frequency in vocab.items():
-        if frequency >= threshold:
-            vti[word] = word_id
-            word_id += 1
+    filtered_words = list(filter(lambda x: vocab[x] >= threshold, vocab.keys()))
 
-    return vti
+    return {word: filtered_words.index(word) for word in filtered_words}
 
 
 # Add unique elements to vocabs
@@ -207,13 +191,13 @@ def add_codes(codes, vti):
 # Create dicts to provide unique indeces for common words; also add unique elements
 def get_vocab_to_int():
 
-    short_q, short_a = get_short_qa()
-    vocab = fill_vocab({}, short_q + short_a)
+    filtered_q, filtered_a = get_filtered_qa()
+    vocab = create_vocab(filtered_q + filtered_a)
 
     codes = ['<PAD>', '<EOS>', '<UNK>', '<GO>']
     threshold = dparams['threshold']
 
-    vocab_to_int = fill_vti({}, vocab, threshold)
+    vocab_to_int = get_vti(vocab, threshold)
     vocab_to_int = add_codes(codes, vocab_to_int)
 
     return vocab_to_int
@@ -234,7 +218,7 @@ def get_word_dicts():
 
 
 # Convert the text to ints and replace rare words with <UNK>
-def fill_ints(sent, vti):
+def convert_to_ints(sent, vti):
     return [vti[word]
             if word in vti
             else vti['<UNK>']
@@ -244,13 +228,13 @@ def fill_ints(sent, vti):
 # Create lists of sentences, where words are replaced with their indeces
 def get_int_qa():
 
-    short_q, short_a = get_short_qa()
+    filtered_q, filtered_a = get_filtered_qa()
     vocab_to_int = get_vocab_to_int()
 
-    short_a = [a + ' <EOS>' for a in short_a]
+    filtered_a = [a + ' <EOS>' for a in filtered_a]
 
-    int_q = [fill_ints(q, vocab_to_int) for q in short_q]
-    int_a = [fill_ints(a, vocab_to_int) for a in short_a]
+    int_q = [convert_to_ints(q, vocab_to_int) for q in filtered_q]
+    int_a = [convert_to_ints(a, vocab_to_int) for a in filtered_a]
 
     return int_q, int_a
 
